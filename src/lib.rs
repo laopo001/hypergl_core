@@ -1,5 +1,4 @@
-use glow::{self, Context, RenderLoop};
-use glutin::GlContext;
+
 
 #[cfg(test)]
 mod tests {
