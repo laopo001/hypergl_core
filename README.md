@@ -1,3 +1,6 @@
+
+[![Greenkeeper badge](https://badges.greenkeeper.io/laopo001/hypergl_core.svg)](https://greenkeeper.io/)
+
 > install 
 
 ```
