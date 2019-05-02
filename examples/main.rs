@@ -53,7 +53,7 @@ fn main() {
             //     .with_title("Hello triangle!")
             //     .with_dimensions(glutin::dpi::LogicalSize::new(1024.0, 768.0));
 
-            let windowed_context = unsafe { window.make_current().unwrap() };
+            let windowed_context = window.make_current().unwrap();
 
             let context = glow::native::Context::from_loader_function(|s| {
                 windowed_context.get_proc_address(s) as *const _

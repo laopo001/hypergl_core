@@ -1,4 +1,6 @@
+#[allow(unused_mut)]
 
+pub mod application;
 
 #[cfg(test)]
 mod tests {
