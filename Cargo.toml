@@ -6,10 +6,14 @@ edition = "2018"
 
 [dependencies]
 takeable-option = "0.4.0"
-# glow = { git = 'https://github.com/grovesNL/glow.git' }
+glow = { git = 'https://github.com/grovesNL/glow.git' }
 
 [target.'cfg(not(any(target_arch = "wasm32")))'.dependencies]
 glutin = "0.21.0"
+
+[target.wasm32-unknown-unknown.dependencies]
+web-sys = { version = "0.3", features=["console"] }
+wasm-bindgen = "0.2"
 
 [build-dependencies]
 gl_generator = "0.11.0"
