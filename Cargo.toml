@@ -7,7 +7,7 @@ edition = "2018"
 
 [dependencies]
 # takeable-option = "0.4.0"
-glow = { git = 'https://github.com/grovesNL/glow.git' }
+glow = { path = './glow' }
 lazy_static = "1.3.0"
 
 [target.'cfg(not(any(target_arch = "wasm32")))'.dependencies]
