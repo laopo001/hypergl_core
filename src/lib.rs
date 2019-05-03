@@ -1,5 +1,6 @@
 #[allow(unused_mut)]
 
+pub mod graphics;
 pub mod application;
 
 #[cfg(test)]
