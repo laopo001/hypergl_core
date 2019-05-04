@@ -2,11 +2,11 @@
 static mut SHADER_ID: usize = 0;
 
 pub struct Shader {
-    shader_id: usize,
+    pub shader_id: usize,
 
 }
 impl Shader {
-    fn new() -> Self {
+    pub fn new() -> Self {
         unsafe {
             let s = Shader {
                 shader_id: SHADER_ID,

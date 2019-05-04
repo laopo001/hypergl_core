@@ -5,10 +5,16 @@ pub struct Application<T: glow::Context> {
 }
 
 impl<T: glow::Context> Application<T> {
+    // #[cfg(target_arch = "wasm32")]
+    // fn new_webgl1(title: &str) -> Application<glow::web::Context> {
+    //     Application {
+    //         renderer: RendererPlatform::<glow::web::Context>::new_webgl1(title),
+    //     }
+    // }
     #[cfg(target_arch = "wasm32")]
-    fn new_webgl1(title: &str) -> Application<glow::web::Context> {
+    fn new_webgl2(title: &str) -> Application<glow::web::Context> {
         Application {
-            renderer: RendererPlatform::<glow::web::Context>::new_webgl1(title),
+            renderer: RendererPlatform::<glow::web::Context>::new_webgl2(title),
         }
     }
     #[cfg(not(target_arch = "wasm32"))]

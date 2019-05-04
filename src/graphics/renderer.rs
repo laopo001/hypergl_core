@@ -1,9 +1,13 @@
 #[cfg(target_arch = "wasm32")]
-use web_sys::{
-    WebGl2RenderingContext, WebGlBuffer, WebGlFramebuffer, WebGlProgram, WebGlRenderbuffer,
-    WebGlRenderingContext, WebGlSampler, WebGlShader, WebGlSync, WebGlTexture,
-    WebGlUniformLocation, WebGlVertexArrayObject,
-};
+use wasm_bindgen::prelude::*;
+// #[cfg(target_arch = "wasm32")]
+// use web_sys::{
+//     WebGl2RenderingContext, WebGlBuffer, WebGlFramebuffer, WebGlProgram, WebGlRenderbuffer,
+//     WebGlRenderingContext, WebGlSampler, WebGlShader, WebGlSync, WebGlTexture,
+//     WebGlUniformLocation, WebGlVertexArrayObject,
+// };
+
+use crate::graphics::vertex_buffer::VertexBuffer;
 
 pub struct RendererPlatform<T: glow::Context> {
     pub gl: T,
@@ -11,7 +15,8 @@ pub struct RendererPlatform<T: glow::Context> {
 
 impl<T: glow::Context> RendererPlatform<T> {
     #[cfg(target_arch = "wasm32")]
-    pub fn new_webgl1(title: &str) -> RendererPlatform<glow::web::Context> {
+    pub fn new_webgl2(title: &str) -> RendererPlatform<glow::web::Context> {
+        use wasm_bindgen::JsCast;
         let canvas = web_sys::window()
             .unwrap()
             .document()
@@ -26,7 +31,7 @@ impl<T: glow::Context> RendererPlatform<T> {
             .unwrap()
             .dyn_into::<web_sys::WebGl2RenderingContext>()
             .unwrap();
-        let gl = glow::web::Context::from_webgl1_context(webgl2_context);
+        let gl = glow::web::Context::from_webgl2_context(webgl2_context);
         RendererPlatform { gl }
     }
     #[cfg(not(target_arch = "wasm32"))]
@@ -54,6 +59,8 @@ impl<T: glow::Context> RendererPlatform<T> {
             let program = self.gl.create_program().expect("Cannot create program");
         }
     }
-
+    pub fn set_vertex_buffer(&self, vertex_buffer: &mut VertexBuffer<T>) {
+        vertex_buffer.bind(self);
+    }
 }
 

@@ -115,6 +115,13 @@ export function __widl_f_compile_shader_WebGL2RenderingContext(arg0, arg1) {
     getObject(arg0).compileShader(getObject(arg1));
 }
 
+export function __widl_f_create_buffer_WebGL2RenderingContext(arg0) {
+
+    const val = getObject(arg0).createBuffer();
+    return isLikeNone(val) ? 0 : addHeapObject(val);
+
+}
+
 export function __widl_f_create_program_WebGL2RenderingContext(arg0) {
 
     const val = getObject(arg0).createProgram();
@@ -237,6 +244,13 @@ export function __widl_f_clear_color_WebGLRenderingContext(arg0, arg1, arg2, arg
 
 export function __widl_f_compile_shader_WebGLRenderingContext(arg0, arg1) {
     getObject(arg0).compileShader(getObject(arg1));
+}
+
+export function __widl_f_create_buffer_WebGLRenderingContext(arg0) {
+
+    const val = getObject(arg0).createBuffer();
+    return isLikeNone(val) ? 0 : addHeapObject(val);
+
 }
 
 export function __widl_f_create_program_WebGLRenderingContext(arg0) {
@@ -446,9 +460,9 @@ export function __wbindgen_throw(ptr, len) {
     throw new Error(getStringFromWasm(ptr, len));
 }
 
-export function __wbindgen_closure_wrapper124(a, b, _ignored) {
-    const f = wasm.__wbg_function_table.get(16);
-    const d = wasm.__wbg_function_table.get(17);
+export function __wbindgen_closure_wrapper129(a, b, _ignored) {
+    const f = wasm.__wbg_function_table.get(19);
+    const d = wasm.__wbg_function_table.get(20);
     const cb = function() {
         this.cnt++;
         let a = this.a;
