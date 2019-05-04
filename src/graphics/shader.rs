@@ -77,6 +77,8 @@ where
     unsafe {
         let shader = gl.create_shader(shader_type).expect("cannot create shader");
         gl.shader_source(shader, source);
+        gl.compile_shader(shader);
+        // dbg!(gl.get_shader_compile_status(shader), source, shader);
         if !gl.get_shader_compile_status(shader) {
             panic!(gl.get_shader_info_log(shader));
         }

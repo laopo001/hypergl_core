@@ -1,7 +1,7 @@
 use crate::graphics::renderer::RendererPlatform;
 
 pub struct Application<T: glow::Context> {
-    renderer: RendererPlatform<T>,
+    pub renderer: RendererPlatform<T>,
 }
 
 impl<T: glow::Context> Application<T> {

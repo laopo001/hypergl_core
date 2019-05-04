@@ -5,11 +5,17 @@ use crate::graphics::vertex_buffer::VertexBuffer;
 
 pub struct RendererPlatform<T: glow::Context> {
     pub gl: T,
+    pub window: Option<glutin::ContextWrapper<glutin::PossiblyCurrent, glutin::Window>>,
+    pub events_loop: Option<glutin::EventsLoop>,
+    #[cfg(target_arch = "wasm32")]
+    pub render_loop: glow::web::RenderLoop,
+    #[cfg(not(target_arch = "wasm32"))]
+    pub render_loop: glow::native::RenderLoop,
 }
 
 impl<T: glow::Context> RendererPlatform<T> {
     #[cfg(target_arch = "wasm32")]
-    pub fn new_webgl2(title: &str) -> RendererPlatform<glow::web::Context> {
+    pub fn new_webgl2(title: &str) -> RendererPlatform<T> {
         use wasm_bindgen::JsCast;
         let canvas = web_sys::window()
             .unwrap()
@@ -26,7 +32,13 @@ impl<T: glow::Context> RendererPlatform<T> {
             .dyn_into::<web_sys::WebGl2RenderingContext>()
             .unwrap();
         let gl = glow::web::Context::from_webgl2_context(webgl2_context);
-        RendererPlatform { gl }
+        let render_loop = glow::web::Context::from_webgl2_context(webgl2_context);
+        RendererPlatform {
+            gl,
+            window: None,
+            events_loop: None,
+            render_loop,
+        }
     }
     #[cfg(not(target_arch = "wasm32"))]
     pub fn new_opengl(title: &str) -> RendererPlatform<glow::native::Context> {
@@ -46,12 +58,15 @@ impl<T: glow::Context> RendererPlatform<T> {
         });
 
         let render_loop = glow::native::RenderLoop::from_window();
-        RendererPlatform { gl: context }
+        RendererPlatform {
+            gl: context,
+            window: Some(windowed_context),
+            events_loop: Some(events_loop),
+            render_loop,
+        }
     }
     fn create_program(&self) {
-        unsafe {
-            let program = self.gl.create_program().expect("Cannot create program");
-        }
+        //
     }
     pub fn set_vertex_buffer(&self, vertex_buffer: &mut VertexBuffer<T>) {
         vertex_buffer.bind(self);
