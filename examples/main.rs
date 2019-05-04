@@ -1,5 +1,5 @@
 use glow::{self, Context, RenderLoop};
-use hypergl_core::application::Application;
+
 #[cfg(target_arch = "wasm32")]
 use wasm_bindgen::prelude::*;
 
@@ -75,8 +75,14 @@ fn main() {
         let vertex_shader_source = include_str!("./main2.vert");
         let fragment_shader_source = include_str!("./main2.frag");
         let shader_sources = [
-            (glow::VERTEX_SHADER, format!("{}\n{}", shader_version, vertex_shader_source)),
-            (glow::FRAGMENT_SHADER, format!("{}\n{}", shader_version, fragment_shader_source)),
+            (
+                glow::VERTEX_SHADER,
+                format!("{}\n{}", shader_version, vertex_shader_source),
+            ),
+            (
+                glow::FRAGMENT_SHADER,
+                format!("{}\n{}", shader_version, fragment_shader_source),
+            ),
         ];
 
         let mut shaders = Vec::with_capacity(shader_sources.len());
@@ -114,27 +120,27 @@ fn main() {
         gl.use_program(Some(program));
         gl.clear_color(0.1, 0.2, 0.3, 1.0);
 
-        // render_loop.run(move |running: &mut bool| {
-        //     // Handle events differently between targets
-        //     #[cfg(not(target_arch = "wasm32"))]
-        //     {
-        //         events_loop.poll_events(|event| match event {
-        //             glutin::Event::WindowEvent { event, .. } => match event {
-        //                 glutin::WindowEvent::CloseRequested => *running = false,
-        //                 _ => (),
-        //             },
-        //             _ => (),
-        //         });
-        //         window.swap_buffers().unwrap();
-        //     }
+        render_loop.run(move |running: &mut bool| {
+            // Handle events differently between targets
+            #[cfg(not(target_arch = "wasm32"))]
+            {
+                events_loop.poll_events(|event| match event {
+                    glutin::Event::WindowEvent { event, .. } => match event {
+                        glutin::WindowEvent::CloseRequested => *running = false,
+                        _ => (),
+                    },
+                    _ => (),
+                });
+                window.swap_buffers().unwrap();
+            }
 
-        //     gl.clear(glow::COLOR_BUFFER_BIT);
-        //     gl.draw_arrays(glow::TRIANGLES, 0, 3);
+            gl.clear(glow::COLOR_BUFFER_BIT);
+            gl.draw_arrays(glow::TRIANGLES, 0, 3);
 
-        //     if !*running {
-        //         gl.delete_program(program);
-        //         gl.delete_vertex_array(vertex_array);
-        //     }
-        // });
+            if !*running {
+                gl.delete_program(program);
+                gl.delete_vertex_array(vertex_array);
+            }
+        });
     }
 }

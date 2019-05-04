@@ -1,9 +1,9 @@
 #[allow(unused_mut)]
 #[macro_use]
 extern crate lazy_static;
-pub mod config;
-pub mod graphics;
 pub mod application;
+pub mod graphics;
+pub mod config;
 
 #[cfg(test)]
 mod tests {

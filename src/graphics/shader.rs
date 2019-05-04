@@ -15,7 +15,7 @@ pub struct Shader<'a, T: glow::Context> {
 impl<'a, T: glow::Context> Shader<'a, T> {
     pub fn new(renderer: &'a RendererPlatform<T>, vshader: String, fshader: String) -> Self {
         unsafe {
-            let s = Shader {
+            let mut s = Shader {
                 shader_id: SHADER_ID,
                 vshader_source: vshader,
                 fshader_source: fshader,
@@ -25,6 +25,7 @@ impl<'a, T: glow::Context> Shader<'a, T> {
                 renderer,
             };
             SHADER_ID += 1;
+            s.compile();
             s
         }
     }
@@ -86,6 +87,7 @@ where
     }
 }
 
+#[cfg(not(target_arch = "wasm32"))]
 #[test]
 fn test_shader_id_add() {
     let renderer = RendererPlatform::<glow::native::Context>::new_opengl("");
