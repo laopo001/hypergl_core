@@ -1,11 +1,5 @@
 #[cfg(target_arch = "wasm32")]
 use wasm_bindgen::prelude::*;
-// #[cfg(target_arch = "wasm32")]
-// use web_sys::{
-//     WebGl2RenderingContext, WebGlBuffer, WebGlFramebuffer, WebGlProgram, WebGlRenderbuffer,
-//     WebGlRenderingContext, WebGlSampler, WebGlShader, WebGlSync, WebGlTexture,
-//     WebGlUniformLocation, WebGlVertexArrayObject,
-// };
 
 use crate::graphics::vertex_buffer::VertexBuffer;
 

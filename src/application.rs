@@ -12,15 +12,15 @@ impl<T: glow::Context> Application<T> {
     //     }
     // }
     #[cfg(target_arch = "wasm32")]
-    fn new_webgl2(title: &str) -> Application<glow::web::Context> {
+    pub fn new_webgl2(title: &str) -> Application<glow::web::Context> {
         Application {
             renderer: RendererPlatform::<glow::web::Context>::new_webgl2(title),
         }
     }
     #[cfg(not(target_arch = "wasm32"))]
-    fn new_opengl(title: &str) -> Application<glow::native::Context> {
+    pub fn new_opengl(title: &str) -> Application<glow::native::Context> {
         Application {
-            renderer: RendererPlatform::<glow::native::Context>::new_opengl("123"),
+            renderer: RendererPlatform::<glow::native::Context>::new_opengl(title),
         }
     }
 }

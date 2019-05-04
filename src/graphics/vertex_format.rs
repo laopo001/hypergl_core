@@ -1,13 +1,4 @@
-/// 定义顶点输入
-#[derive(Copy, Clone)]
-enum SEMANTIC {
-    POSITION,
-    NORMAL,
-    TANGENT,
-    COLOR,
-    TEXCOORD0,
-    TEXCOORD1,
-}
+use crate::config::SEMANTIC;
 
 pub struct VertexType {
     semantic: SEMANTIC,
