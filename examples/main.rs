@@ -115,7 +115,7 @@ fn main() {
             gl.attach_shader(program, shader);
             shaders.push(shader);
         }
-
+        let t = gl.create_buffer().unwrap();
         gl.link_program(program);
         if !gl.get_program_link_status(program) {
             panic!(gl.get_program_info_log(program));

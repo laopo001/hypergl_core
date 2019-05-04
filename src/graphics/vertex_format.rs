@@ -31,6 +31,7 @@ pub struct VertexFormat {
     pub has_uv0: bool,
     pub has_uv1: bool,
     pub has_color: bool,
+    pub size: u32,
 }
 
 impl VertexFormat {
@@ -44,6 +45,7 @@ impl VertexFormat {
         let mut has_color: bool = false;
         for i in 0..len {
             let item = &vertex_types[i];
+            offset += item.size as u32 * F32_BYTES_SIZE;
             let element = VertexAttribPointer {
                 semantic: item.semantic,
                 offset,
@@ -52,18 +54,21 @@ impl VertexFormat {
                 stride: 0,
             };
             elements.push(element);
-            offset += item.size as u32 * F32_BYTES_SIZE;
             match item.semantic {
                 TEXCOORD0 => has_uv0 = true,
                 TEXCOORD1 => has_uv1 = true,
                 COLOR => has_color = true,
             }
         }
+        for i in 0..len {
+            elements[i].stride = offset;
+        }
         VertexFormat {
             elements,
             has_uv0,
             has_uv1,
             has_color,
+            size: offset,
         }
     }
 }

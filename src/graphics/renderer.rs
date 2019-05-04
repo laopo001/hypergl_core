@@ -6,7 +6,7 @@ use web_sys::{
 };
 
 pub struct RendererPlatform<T: glow::Context> {
-    gl: T,
+    pub gl: T,
 }
 
 impl<T: glow::Context> RendererPlatform<T> {
