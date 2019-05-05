@@ -94,9 +94,9 @@ fn main() {
 
             gl.shader_source(shader, shader_source);
             gl.compile_shader(shader);
-            dbg!(gl.get_shader_compile_status(shader), shader_source, shader);
+            // dbg!(gl.get_shader_compile_status(shader), shader_source, shader);
             if !gl.get_shader_compile_status(shader) {
-                dbg!(gl.get_shader_info_log(shader));
+                // dbg!(gl.get_shader_info_log(shader));
                 panic!(gl.get_shader_info_log(shader));
             }
             gl.attach_shader(program, shader);

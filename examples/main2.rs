@@ -2,6 +2,12 @@ use hypergl_core::application::Application;
 use hypergl_core::graphics::shader::Shader;
 // use glow::native::Context;
 use glow::{Context, RenderLoop};
+#[cfg(target_arch = "wasm32")]
+use wasm_bindgen::prelude::*;
+#[cfg_attr(target_arch = "wasm32", wasm_bindgen(start))]
+pub fn wasm_main() {
+    main();
+}
 
 fn main() {
     #[cfg(not(target_arch = "wasm32"))]
@@ -12,7 +18,7 @@ fn main() {
     #[cfg(target_arch = "wasm32")]
     let app = Application::<glow::web::Context>::new_webgl2("123");
     #[cfg(target_arch = "wasm32")]
-    let shader_version = "#version 300";
+    let shader_version = "#version 300 es";
 
     let vertex_shader_source = include_str!("./main2.vert");
     let fragment_shader_source = include_str!("./main2.frag");
@@ -23,7 +29,9 @@ fn main() {
     );
     app.renderer.set_shader_program(&mut shader);
     let gl = app.renderer.gl;
+    #[cfg(not(target_arch = "wasm32"))]
     let window = app.renderer.window.unwrap();
+    #[cfg(not(target_arch = "wasm32"))]
     let mut events_loop = app.renderer.events_loop.unwrap();
     // unsafe {
     //     gl.clear(glow::COLOR_BUFFER_BIT);

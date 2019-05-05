@@ -8,3 +8,4 @@ build/*.wasm
 .cache-loader/
 .idea/
 yarn-error.log
+src/

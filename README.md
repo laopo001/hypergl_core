@@ -10,4 +10,4 @@ cargo run --example main
 
 > web start (wasm32-unknown-unknown)
 
-node build-web.js
+source build-web.sh

@@ -13,10 +13,10 @@ pub struct RendererPlatform<T: glow::Context> {
     #[cfg(not(target_arch = "wasm32"))]
     pub render_loop: glow::native::RenderLoop,
 
-    #[cfg(target_arch = "wasm32")]
-    pub window: Option<()>,
-    #[cfg(target_arch = "wasm32")]
-    pub events_loop: Option<()>,
+    // #[cfg(target_arch = "wasm32")]
+    // pub window: Option<()>,
+    // #[cfg(target_arch = "wasm32")]
+    // pub events_loop: Option<()>,
 
     #[cfg(target_arch = "wasm32")]
     pub render_loop: glow::web::RenderLoop,
@@ -46,8 +46,8 @@ impl<T: glow::Context> RendererPlatform<T> {
 
         RendererPlatform {
             gl,
-            window: None,
-            events_loop: None,
+            // window: None,
+            // events_loop: None,
             render_loop,
         }
     }
