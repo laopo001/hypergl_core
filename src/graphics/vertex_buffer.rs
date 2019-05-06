@@ -1,7 +1,7 @@
 
 use crate::graphics::renderer::RendererPlatform;
 use crate::graphics::vertex_format::VertexFormat;
-use glow::Context;
+// use glow::Context;
 // type Buffer = impl glow::Context;
 
 pub struct VertexBuffer<T: glow::Context> {
