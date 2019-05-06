@@ -1,9 +1,9 @@
-
 use crate::graphics::shader::Shader;
 use crate::graphics::vertex_buffer::VertexBuffer;
 
 #[cfg(target_arch = "wasm32")]
 use wasm_bindgen::prelude::*;
+
 pub struct RendererPlatform<T: glow::Context> {
     pub gl: T,
     #[cfg(not(target_arch = "wasm32"))]
@@ -12,15 +12,11 @@ pub struct RendererPlatform<T: glow::Context> {
     pub events_loop: Option<glutin::EventsLoop>,
     #[cfg(not(target_arch = "wasm32"))]
     pub render_loop: glow::native::RenderLoop,
-
-    // #[cfg(target_arch = "wasm32")]
-    // pub window: Option<()>,
-    // #[cfg(target_arch = "wasm32")]
-    // pub events_loop: Option<()>,
-
     #[cfg(target_arch = "wasm32")]
     pub render_loop: glow::web::RenderLoop,
-
+    pub clear_color: [f32; 4],
+    pub last_scissor: [i32; 4],
+    pub last_viewport: [i32; 4],
 }
 
 impl<T: glow::Context> RendererPlatform<T> {
@@ -44,12 +40,15 @@ impl<T: glow::Context> RendererPlatform<T> {
         let render_loop = glow::web::RenderLoop::from_request_animation_frame();
         let gl = glow::web::Context::from_webgl2_context(webgl2_context);
 
-        RendererPlatform {
+        let r = RendererPlatform {
             gl,
-            // window: None,
-            // events_loop: None,
+            clear_color: [0.0, 0.0, 0.0, 1.0],
+            last_scissor: [0; 4],
+            last_viewport: [0; 4],
             render_loop,
-        }
+        };
+        r.initialize();
+        r
     }
     #[cfg(not(target_arch = "wasm32"))]
     pub fn new_opengl(title: &str) -> RendererPlatform<glow::native::Context> {
@@ -70,12 +69,17 @@ impl<T: glow::Context> RendererPlatform<T> {
 
         let render_loop = glow::native::RenderLoop::from_window();
 
-        RendererPlatform {
+        let r = RendererPlatform {
             gl: context,
             window: Some(windowed_context),
             events_loop: Some(events_loop),
+            clear_color: [0.0, 0.0, 0.0, 1.0],
+            last_scissor: [0; 4],
+            last_viewport: [0; 4],
             render_loop,
-        }
+        };
+        r.initialize();
+        r
     }
     pub fn set_shader_program(&self, shader: &mut Shader<T>) {
         shader.link();
@@ -83,15 +87,43 @@ impl<T: glow::Context> RendererPlatform<T> {
             self.gl.use_program(shader.program);
         }
     }
-    // setShaderProgram(shader: Shader) {
-    //     this.currShader = shader;
-    //     if (shader.ready === false) {
-    //         shader.link();
-    //     }
-    //     this.gl.useProgram(shader.program as WebGLProgram);
-    // }
     pub fn set_vertex_buffer(&self, vertex_buffer: &mut VertexBuffer<T>) {
         vertex_buffer.bind(self);
     }
+    /// 参数 0~1 数值
+    pub fn set_clear_color(&mut self, r: f32, g: f32, b: f32, a: f32) {
+        self.clear_color[0] = r;
+        self.clear_color[1] = g;
+        self.clear_color[2] = b;
+        self.clear_color[3] = a;
+        unsafe { self.gl.clear_color(r, g, b, a) }
+    }
+    // 左下角。最初（0,0）
+    pub fn set_view_port(&mut self, x: i32, y: i32, w: i32, h: i32) {
+        self.last_viewport[0] = x;
+        self.last_viewport[1] = y;
+        self.last_viewport[2] = w;
+        self.last_viewport[3] = h;
+        unsafe {
+            self.gl.viewport(x, y, w, h);
+        }
+    }
+    /// 左下角。最初（0,0） 裁剪
+    pub fn set_scissor(&mut self, x: i32, y: i32, w: i32, h: i32) {
+        self.last_scissor[0] = x;
+        self.last_scissor[1] = y;
+        self.last_scissor[2] = w;
+        self.last_scissor[3] = h;
+        unsafe {
+            self.gl.scissor(x, y, w, h);
+        }
+    }
+    fn initialize(&self) {
+        let [r, g, b, a] = self.clear_color;
+        unsafe {
+            self.gl.clear_color(r, g, b, a);
+        }
+    }
+    pub fn draw() {}
 }
 

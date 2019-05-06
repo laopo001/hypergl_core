@@ -11,12 +11,12 @@ pub fn wasm_main() {
 
 fn main() {
     #[cfg(not(target_arch = "wasm32"))]
-    let app = Application::<glow::native::Context>::new_opengl("123");
+    let mut app = Application::<glow::native::Context>::new_opengl("123");
     #[cfg(not(target_arch = "wasm32"))]
     let shader_version = "#version 410";
 
     #[cfg(target_arch = "wasm32")]
-    let app = Application::<glow::web::Context>::new_webgl2("123");
+    let mut app = Application::<glow::web::Context>::new_webgl2("123");
     #[cfg(target_arch = "wasm32")]
     let shader_version = "#version 300 es";
 
@@ -28,15 +28,18 @@ fn main() {
         format!("{}\n{}", shader_version, fragment_shader_source),
     );
     app.renderer.set_shader_program(&mut shader);
+
+    // app.renderer.set_view_port(0, 0, 500, 300);
+    app.renderer.set_scissor(0, 0, 600, 400);
+    unsafe {
+        app.renderer.gl.enable(glow::SCISSOR_TEST);
+    }
+
     let gl = app.renderer.gl;
     #[cfg(not(target_arch = "wasm32"))]
     let window = app.renderer.window.unwrap();
     #[cfg(not(target_arch = "wasm32"))]
     let mut events_loop = app.renderer.events_loop.unwrap();
-    // unsafe {
-    //     gl.clear(glow::COLOR_BUFFER_BIT);
-    //     gl.draw_arrays(glow::TRIANGLES, 0, 3);
-    // }
 
     app.renderer.render_loop.run(move |running: &mut bool| {
         // Handle events differently between targets

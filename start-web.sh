@@ -20,6 +20,7 @@ do
     echo "import(\"./${fileName}\")
     .catch(e => console.error(\"Error importing index.js:\", e));" > web/src/bootstrap.js  
 
+    (cd web && npm run start) 
 done
 
 
