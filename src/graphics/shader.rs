@@ -1,5 +1,5 @@
 use crate::graphics::renderer::RendererPlatform;
-use crate::graphics::shader_variable::{ShaderVariable, GL_Location};
+use crate::graphics::shader_variable::{GL_Location, ShaderVariable};
 
 static mut SHADER_ID: usize = 0;
 
@@ -59,17 +59,21 @@ impl<'a, T: glow::Context> Shader<'a, T> {
                 panic!(self.renderer.gl.get_program_info_log(program));
             }
             // let num_attributes = self.renderer.gl.get_program_paramater();
-            self.renderer.gl.detach_shader(program, self.vshader.unwrap());
+            self.renderer
+                .gl
+                .detach_shader(program, self.vshader.unwrap());
             self.renderer.gl.delete_shader(self.vshader.unwrap());
-            self.renderer.gl.detach_shader(program, self.fshader.unwrap());
+            self.renderer
+                .gl
+                .detach_shader(program, self.fshader.unwrap());
             self.renderer.gl.delete_shader(self.fshader.unwrap());
         }
     }
 }
 
 pub fn create_program<T>(gl: &T, vertex_shader: T::Shader, fragment_shader: T::Shader) -> T::Program
-    where
-        T: glow::Context,
+where
+    T: glow::Context,
 {
     unsafe {
         let program = gl.create_program().expect("cannot create shader");
@@ -80,8 +84,8 @@ pub fn create_program<T>(gl: &T, vertex_shader: T::Shader, fragment_shader: T::S
 }
 
 pub fn load_shader<T>(gl: &T, shader_type: u32, source: &str) -> T::Shader
-    where
-        T: glow::Context,
+where
+    T: glow::Context,
 {
     unsafe {
         let shader = gl.create_shader(shader_type).expect("cannot create shader");
@@ -99,7 +103,7 @@ pub fn load_shader<T>(gl: &T, shader_type: u32, source: &str) -> T::Shader
 #[test]
 fn test_shader_id_add() {
     let renderer = RendererPlatform::<glow::native::Context>::new_opengl("");
-    let _a = Shader::<glow::native::Context>::new(&renderer, "".to_string(), "".to_string());
-    let b = Shader::<glow::native::Context>::new(&renderer, "".to_string(), "".to_string());
+    let _a = Shader::new(&renderer, "".to_string(), "".to_string());
+    let b = Shader::new(&renderer, "".to_string(), "".to_string());
     assert_eq!(b.shader_id, 1);
 }

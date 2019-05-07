@@ -41,3 +41,8 @@ js-sys = "0.3"
 
 [build-dependencies]
 gl_generator = "0.11.0"
+
+[features]
+default = ["webgl2"]
+webgl1 = []
+webgl2 = []

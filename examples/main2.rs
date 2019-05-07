@@ -10,22 +10,33 @@ pub fn wasm_main() {
 }
 
 fn main() {
+
     #[cfg(not(target_arch = "wasm32"))]
     let mut app = Application::<glow::native::Context>::new_opengl("123");
 
+    #[cfg(all(target_arch = "wasm32", feature = "webgl1"))]
+    let mut app = Application::<glow::web::Context>::new_webgl1("123");
 
-    #[cfg(target_arch = "wasm32")]
+    #[cfg(all(target_arch = "wasm32", feature = "webgl2"))]
     let mut app = Application::<glow::web::Context>::new_webgl2("123");
 
     let shader_version = "#version 300 es";
 
     let vertex_shader_source = include_str!("./main2.vert");
     let fragment_shader_source = include_str!("./main2.frag");
+    #[cfg(not(feature = "webgl1"))]
     let mut shader = Shader::new(
         &app.renderer,
         format!("{}\n{}", shader_version, vertex_shader_source),
         format!("{}\n{}", shader_version, fragment_shader_source),
     );
+    #[cfg(all(feature = "webgl1"))]
+    let mut shader = Shader::new(
+        &app.renderer,
+        vertex_shader_source.to_string(),
+        fragment_shader_source.to_string(),
+    );
+
     app.renderer.set_shader_program(&mut shader);
 
     // app.renderer.set_view_port(0, 0, 500, 300);
