@@ -5,20 +5,25 @@ pub struct ShaderVariable<T: glow::Context> {
     pub enable: bool,
     // pub element: VertexAttribPointer,
     pub name: String,
-    pub uniform_type: ACTIVE_INFO_TYPE,
-    pub location_id: T::UniformLocation,
+    pub gl_type: ACTIVE_INFO_TYPE,
+    pub location_id: GL_Location<T::UniformLocation>,
+}
+
+pub enum GL_Location<T> {
+    UniformLocation(T),
+    AttribLocation(u32),
 }
 
 impl<T: glow::Context> ShaderVariable<T> {
     pub fn new(
         name: &str,
-        uniform_type: ACTIVE_INFO_TYPE,
-        location_id: T::UniformLocation,
+        gl_type: ACTIVE_INFO_TYPE,
+        location_id: GL_Location<T::UniformLocation>,
     ) -> Self {
         ShaderVariable {
             enable: false,
             name: name.to_string(),
-            uniform_type,
+            gl_type,
             location_id,
         }
     }

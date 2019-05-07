@@ -1,5 +1,5 @@
 use crate::graphics::renderer::RendererPlatform;
-
+use crate::graphics::shader_variable::{ShaderVariable,GL_Location};
 static mut SHADER_ID: usize = 0;
 
 pub struct Shader<'a, T: glow::Context> {
@@ -10,7 +10,9 @@ pub struct Shader<'a, T: glow::Context> {
     pub fshader: Option<T::Shader>,
     pub program: Option<T::Program>,
     pub renderer: &'a RendererPlatform<T>,
-
+    pub attributes: Vec<ShaderVariable<T>>,
+    pub uniforms: Vec<ShaderVariable<T>>,
+    pub samplers: Vec<ShaderVariable<T>>,
 }
 impl<'a, T: glow::Context> Shader<'a, T> {
     pub fn new(renderer: &'a RendererPlatform<T>, vshader: String, fshader: String) -> Self {
@@ -23,6 +25,9 @@ impl<'a, T: glow::Context> Shader<'a, T> {
                 vshader: None,
                 fshader: None,
                 renderer,
+                attributes:vec![],
+                uniforms:vec![],
+                samplers:vec![],
             };
             SHADER_ID += 1;
             s.compile();
