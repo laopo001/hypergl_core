@@ -1,5 +1,6 @@
 use crate::graphics::renderer::RendererPlatform;
-use crate::graphics::shader_variable::{ShaderVariable,GL_Location};
+use crate::graphics::shader_variable::{ShaderVariable, GL_Location};
+
 static mut SHADER_ID: usize = 0;
 
 pub struct Shader<'a, T: glow::Context> {
@@ -14,6 +15,7 @@ pub struct Shader<'a, T: glow::Context> {
     pub uniforms: Vec<ShaderVariable<T>>,
     pub samplers: Vec<ShaderVariable<T>>,
 }
+
 impl<'a, T: glow::Context> Shader<'a, T> {
     pub fn new(renderer: &'a RendererPlatform<T>, vshader: String, fshader: String) -> Self {
         unsafe {
@@ -25,9 +27,9 @@ impl<'a, T: glow::Context> Shader<'a, T> {
                 vshader: None,
                 fshader: None,
                 renderer,
-                attributes:vec![],
-                uniforms:vec![],
-                samplers:vec![],
+                attributes: vec![],
+                uniforms: vec![],
+                samplers: vec![],
             };
             SHADER_ID += 1;
             s.compile();
@@ -56,17 +58,18 @@ impl<'a, T: glow::Context> Shader<'a, T> {
             if !self.renderer.gl.get_program_link_status(program) {
                 panic!(self.renderer.gl.get_program_info_log(program));
             }
-            self.renderer
-                .gl
-                .detach_shader(program, self.vshader.unwrap());
+            // let num_attributes = self.renderer.gl.get_program_paramater();
+            self.renderer.gl.detach_shader(program, self.vshader.unwrap());
+            self.renderer.gl.delete_shader(self.vshader.unwrap());
+            self.renderer.gl.detach_shader(program, self.fshader.unwrap());
             self.renderer.gl.delete_shader(self.fshader.unwrap());
         }
     }
 }
 
 pub fn create_program<T>(gl: &T, vertex_shader: T::Shader, fragment_shader: T::Shader) -> T::Program
-where
-    T: glow::Context,
+    where
+        T: glow::Context,
 {
     unsafe {
         let program = gl.create_program().expect("cannot create shader");
@@ -77,8 +80,8 @@ where
 }
 
 pub fn load_shader<T>(gl: &T, shader_type: u32, source: &str) -> T::Shader
-where
-    T: glow::Context,
+    where
+        T: glow::Context,
 {
     unsafe {
         let shader = gl.create_shader(shader_type).expect("cannot create shader");
