@@ -11,7 +11,7 @@ impl<T: glow::Context> Application<T> {
             renderer: RendererPlatform::<T>::new_webgl1(title),
         }
     }
-    #[cfg(all(target_arch = "wasm32", feature = "webgl2"))]
+    #[cfg(all(target_arch = "wasm32", not(feature = "webgl1")))]
     pub fn new_webgl2(title: &str) -> Application<impl glow::Context> {
         Application {
             renderer: RendererPlatform::<T>::new_webgl2(title),

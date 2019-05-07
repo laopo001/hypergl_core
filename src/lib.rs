@@ -5,6 +5,7 @@ extern crate cfg_if;
 pub mod application;
 pub mod graphics;
 pub mod config;
+pub mod utils;
 
 #[cfg(test)]
 mod tests {

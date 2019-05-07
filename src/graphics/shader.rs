@@ -1,6 +1,5 @@
 use crate::graphics::renderer::RendererPlatform;
 use crate::graphics::shader_variable::{GL_Location, ShaderVariable};
-
 static mut SHADER_ID: usize = 0;
 
 pub struct Shader<'a, T: glow::Context> {

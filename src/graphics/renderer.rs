@@ -50,7 +50,7 @@ impl<T: glow::Context> RendererPlatform<T> {
         r.initialize();
         r
     }
-    #[cfg(all(target_arch = "wasm32", feature = "webgl2"))]
+    #[cfg(all(target_arch = "wasm32", not(feature = "webgl1")))]
     pub fn new_webgl2(title: &str) -> RendererPlatform<impl glow::Context> {
         use wasm_bindgen::JsCast;
         let canvas = web_sys::window()

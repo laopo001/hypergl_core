@@ -17,13 +17,14 @@ fn main() {
     #[cfg(all(target_arch = "wasm32", feature = "webgl1"))]
     let mut app = Application::<glow::web::Context>::new_webgl1("123");
 
-    #[cfg(all(target_arch = "wasm32", feature = "webgl2"))]
+    #[cfg(all(target_arch = "wasm32", not(feature = "webgl1")))]
     let mut app = Application::<glow::web::Context>::new_webgl2("123");
 
     let shader_version = "#version 300 es";
 
     let vertex_shader_source = include_str!("./main2.vert");
     let fragment_shader_source = include_str!("./main2.frag");
+
     #[cfg(not(feature = "webgl1"))]
     let mut shader = Shader::new(
         &app.renderer,
