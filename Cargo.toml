@@ -2,7 +2,7 @@
 name = "hypergl_core"
 version = "0.1.0"
 authors = ["laopo001 <353272497@qq.com>"]
-build = "build.rs"
+# build = "build.rs"
 edition = "2018"
 
 [dependencies]

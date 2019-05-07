@@ -12,12 +12,11 @@ pub fn wasm_main() {
 fn main() {
     #[cfg(not(target_arch = "wasm32"))]
     let mut app = Application::<glow::native::Context>::new_opengl("123");
-    #[cfg(not(target_arch = "wasm32"))]
-    let shader_version = "#version 410";
+
 
     #[cfg(target_arch = "wasm32")]
     let mut app = Application::<glow::web::Context>::new_webgl2("123");
-    #[cfg(target_arch = "wasm32")]
+
     let shader_version = "#version 300 es";
 
     let vertex_shader_source = include_str!("./main2.vert");

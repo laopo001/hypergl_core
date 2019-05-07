@@ -56,6 +56,11 @@ fn main() {
 
             let windowed_context = window.make_current().unwrap();
 
+            println!(
+                "Pixel format of the window's GL context: {:?}",
+                windowed_context.get_pixel_format()
+            );
+
             let context = glow::native::Context::from_loader_function(|s| {
                 windowed_context.get_proc_address(s) as *const _
             });
