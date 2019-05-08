@@ -1,5 +1,6 @@
 use crate::graphics::renderer::RendererPlatform;
 use crate::graphics::shader_variable::{GL_Location, ShaderVariable};
+use crate::utils::{console_log,console_error};
 static mut SHADER_ID: usize = 0;
 
 pub struct Shader<'a, T: glow::Context> {
@@ -55,6 +56,7 @@ impl<'a, T: glow::Context> Shader<'a, T> {
             let program = self.program.expect("必须先执行compile");
             self.renderer.gl.link_program(program);
             if !self.renderer.gl.get_program_link_status(program) {
+                console_error(self.renderer.gl.get_program_info_log(program));
                 panic!(self.renderer.gl.get_program_info_log(program));
             }
             // let num_attributes = self.renderer.gl.get_program_paramater();
@@ -92,6 +94,7 @@ where
         gl.compile_shader(shader);
         // dbg!(gl.get_shader_compile_status(shader), source, shader);
         if !gl.get_shader_compile_status(shader) {
+            console_error(gl.get_shader_info_log(shader));
             panic!(gl.get_shader_info_log(shader));
         }
         return shader;

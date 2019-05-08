@@ -4,7 +4,6 @@ version = "0.1.0"
 authors = ["laopo001 <353272497@qq.com>"]
 # build = "build.rs"
 edition = "2018"
-target ="wasm32-unknown-unknown"
 
 [dependencies]
 # takeable-option = "0.4.0"
@@ -34,6 +33,7 @@ features = [
   "WebGlUniformLocation",
   "WebGlVertexArrayObject",
   "Window",
+  "console",
 ]
 
 [target.wasm32-unknown-unknown.dependencies]

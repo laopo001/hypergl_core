@@ -1,5 +1,7 @@
 use crate::graphics::shader::Shader;
 use crate::graphics::vertex_buffer::VertexBuffer;
+use crate::utils::console_log;
+
 
 #[cfg(target_arch = "wasm32")]
 use wasm_bindgen::prelude::*;
