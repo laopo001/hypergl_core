@@ -114,7 +114,9 @@ impl<T: glow::Context> RendererPlatform<T> {
         r
     }
     pub fn set_shader_program(&self, shader: &mut Shader<T>) {
-        shader.link();
+        if !shader.ready {
+            shader.link();
+        }
         unsafe {
             self.gl.use_program(shader.program);
         }

@@ -1,6 +1,6 @@
 use crate::graphics::renderer::RendererPlatform;
 use crate::graphics::shader_variable::{GL_Location, ShaderVariable};
-use crate::utils::{console_log,console_error};
+use crate::utils::{console_error, console_log};
 static mut SHADER_ID: usize = 0;
 
 pub struct Shader<'a, T: glow::Context> {
@@ -14,6 +14,7 @@ pub struct Shader<'a, T: glow::Context> {
     pub attributes: Vec<ShaderVariable<T>>,
     pub uniforms: Vec<ShaderVariable<T>>,
     pub samplers: Vec<ShaderVariable<T>>,
+    pub ready: bool,
 }
 
 impl<'a, T: glow::Context> Shader<'a, T> {
@@ -30,6 +31,7 @@ impl<'a, T: glow::Context> Shader<'a, T> {
                 attributes: vec![],
                 uniforms: vec![],
                 samplers: vec![],
+                ready: false,
             };
             SHADER_ID += 1;
             s.compile();
@@ -68,6 +70,13 @@ impl<'a, T: glow::Context> Shader<'a, T> {
                 .gl
                 .detach_shader(program, self.fshader.unwrap());
             self.renderer.gl.delete_shader(self.fshader.unwrap());
+
+            let count = self
+                .renderer
+                .gl
+                .get_active_uniforms(program);
+            console_log(count.to_string());
+            self.ready = true;
         }
     }
 }

@@ -22,5 +22,4 @@ do
 
 done
 
-
- 
+# cargo watch -w src -s 'cargo build --example main2 --target wasm32-unknown-unknown &&wasm-bindgen target/wasm32-unknown-unknown/debug/examples/main2.wasm --out-dir web/src/'
