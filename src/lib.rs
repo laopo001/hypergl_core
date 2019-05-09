@@ -1,3 +1,5 @@
+#![feature(box_into_raw_non_null, box_syntax, box_patterns)]
+
 #[allow(unused_mut)]
 #[macro_use]
 extern crate lazy_static;

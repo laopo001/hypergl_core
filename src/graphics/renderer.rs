@@ -1,6 +1,8 @@
 use crate::graphics::shader::Shader;
 use crate::graphics::vertex_buffer::VertexBuffer;
 use crate::utils::console_log;
+use crate::config::ACTIVE_INFO_TYPE;
+use std::collections::HashMap;
 
 
 #[cfg(target_arch = "wasm32")]
@@ -19,6 +21,7 @@ pub struct RendererPlatform<T: glow::Context> {
     pub clear_color: [f32; 4],
     pub last_scissor: [i32; 4],
     pub last_viewport: [i32; 4],
+    pub gl_to_rs_map:HashMap<u32,ACTIVE_INFO_TYPE>,
 }
 
 impl<T: glow::Context> RendererPlatform<T> {
@@ -42,12 +45,13 @@ impl<T: glow::Context> RendererPlatform<T> {
         let render_loop = glow::web::RenderLoop::from_request_animation_frame();
         let gl = glow::web::Context::from_webgl1_context(webgl_context);
 
-        let r = RendererPlatform {
+        let mut r = RendererPlatform {
             gl,
             clear_color: [0.0, 0.0, 0.0, 1.0],
             last_scissor: [0; 4],
             last_viewport: [0; 4],
             render_loop,
+            gl_to_rs_map:HashMap::new(),
         };
         r.initialize();
         r
@@ -72,12 +76,13 @@ impl<T: glow::Context> RendererPlatform<T> {
         let render_loop = glow::web::RenderLoop::from_request_animation_frame();
         let gl = glow::web::Context::from_webgl2_context(webgl2_context);
 
-        let r = RendererPlatform {
+        let mut r = RendererPlatform {
             gl,
             clear_color: [0.0, 0.0, 0.0, 1.0],
             last_scissor: [0; 4],
             last_viewport: [0; 4],
             render_loop,
+            gl_to_rs_map:HashMap::new(),
         };
         r.initialize();
         r
@@ -101,7 +106,7 @@ impl<T: glow::Context> RendererPlatform<T> {
 
         let render_loop = glow::native::RenderLoop::from_window();
 
-        let r = RendererPlatform {
+        let mut r = RendererPlatform {
             gl: context,
             window: Some(windowed_context),
             events_loop: Some(events_loop),
@@ -109,6 +114,7 @@ impl<T: glow::Context> RendererPlatform<T> {
             last_scissor: [0; 4],
             last_viewport: [0; 4],
             render_loop,
+            gl_to_rs_map:HashMap::new(),
         };
         r.initialize();
         r
@@ -152,10 +158,31 @@ impl<T: glow::Context> RendererPlatform<T> {
             self.gl.scissor(x, y, w, h);
         }
     }
-    fn initialize(&self) {
+    fn initialize(&mut self) {
         let [r, g, b, a] = self.clear_color;
         unsafe {
             self.gl.clear_color(r, g, b, a);
+        }
+        self.gl_to_rs_map.insert(glow::BOOL, ACTIVE_INFO_TYPE::BOOL);
+        self.gl_to_rs_map.insert(glow::INT, ACTIVE_INFO_TYPE::INT);
+        self.gl_to_rs_map.insert(glow::FLOAT, ACTIVE_INFO_TYPE::FLOAT);
+        self.gl_to_rs_map.insert(glow::FLOAT_VEC2, ACTIVE_INFO_TYPE::FLOAT_VEC2);
+        self.gl_to_rs_map.insert(glow::FLOAT_VEC3, ACTIVE_INFO_TYPE::FLOAT_VEC3);
+        self.gl_to_rs_map.insert(glow::FLOAT_VEC4, ACTIVE_INFO_TYPE::FLOAT_VEC4);
+        self.gl_to_rs_map.insert(glow::INT_VEC2, ACTIVE_INFO_TYPE::INT_VEC2);
+        self.gl_to_rs_map.insert(glow::INT_VEC3, ACTIVE_INFO_TYPE::INT_VEC3);
+        self.gl_to_rs_map.insert(glow::INT_VEC4, ACTIVE_INFO_TYPE::INT_VEC4);
+        self.gl_to_rs_map.insert(glow::FLOAT_MAT2, ACTIVE_INFO_TYPE::FLOAT_MAT2);
+        self.gl_to_rs_map.insert(glow::FLOAT_MAT3, ACTIVE_INFO_TYPE::FLOAT_MAT3);
+        self.gl_to_rs_map.insert(glow::FLOAT_MAT4, ACTIVE_INFO_TYPE::FLOAT_MAT4);
+        self.gl_to_rs_map.insert(glow::SAMPLER_2D, ACTIVE_INFO_TYPE::SAMPLER_2D);
+        self.gl_to_rs_map.insert(glow::SAMPLER_CUBE, ACTIVE_INFO_TYPE::SAMPLER_CUBE);
+
+        #[cfg(not(feature = "webgl1"))]
+        {
+            self.gl_to_rs_map.insert(glow::SAMPLER_2D_SHADOW, ACTIVE_INFO_TYPE::SAMPLER_2D_SHADOW);
+            self.gl_to_rs_map.insert(glow::SAMPLER_CUBE_SHADOW, ACTIVE_INFO_TYPE::SAMPLER_CUBE_SHADOW);
+            self.gl_to_rs_map.insert(glow::SAMPLER_3D, ACTIVE_INFO_TYPE::SAMPLER_3D);
         }
     }
     pub fn draw() {}

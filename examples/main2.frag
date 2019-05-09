@@ -1,6 +1,6 @@
-precision mediump float;
-in vec2 vert;
-out vec4 color;
-void main() {
-    color = vec4(vert, 0.5, 1.0);
-}
+out highp vec4 hyper_fragColor;
+#define gl_FragColor hyper_fragColor
+
+void main(void){  
+    gl_FragColor = vec4(1.0, 0.0, 0.0, 1.0);  
+}  

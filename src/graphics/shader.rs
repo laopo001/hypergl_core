@@ -77,21 +77,37 @@ impl<'a, T: glow::Context> Shader<'a, T> {
                 .get_active_attribs(program);
             // ! gl_VertexID 内置变量也计算在active_attrib中
             let mut i = 0;
-            while (i < attribs_count) {
+            while i < attribs_count {
                 let info = self.renderer.gl.get_active_attrib(program, i).unwrap();
-                console_log(info.name.to_string());
+                console_log(&info.name);
+                if info.name.as_str() == "gl_VertexID" {
+                    i+=1;
+                    continue;
+                }
+                let location = self.renderer.gl.get_attrib_location(self.program.unwrap(), &info.name) as u32;
+                self.attributes.push(ShaderVariable::new(
+                    &info.name, 
+                    *self.renderer.gl_to_rs_map.get(&info.utype).unwrap(),
+                    GL_Location::AttribLocation(location),
+                ));
                 i+=1;
             }
-
+            console_log("=====");
             i = 0;
             let uniforms_count = self
                 .renderer
                 .gl
                 .get_active_uniforms(program);
-            console_log("=====");
-            while (i < uniforms_count) {
+            
+            while i < uniforms_count {
                 let info = self.renderer.gl.get_active_uniform(program, i).unwrap();
                 console_log(info.name.to_string());
+                let location = self.renderer.gl.get_uniform_location(self.program.unwrap(), &info.name).unwrap();
+                self.attributes.push(ShaderVariable::new(
+                    &info.name, 
+                    *self.renderer.gl_to_rs_map.get(&info.utype).unwrap(),
+                    GL_Location::UniformLocation(location),
+                ));
                 i+=1;
             }
             
@@ -123,6 +139,7 @@ where
         // dbg!(gl.get_shader_compile_status(shader), source, shader);
         if !gl.get_shader_compile_status(shader) {
             console_error(gl.get_shader_info_log(shader));
+            console_log(source);
             panic!(gl.get_shader_info_log(shader));
         }
         return shader;

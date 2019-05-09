@@ -6,6 +6,14 @@ pub struct VertexType {
     normalize: bool,
 }
 
+impl VertexType {
+    pub fn new(semantic: SEMANTIC,size: u8,normalize: bool) -> Self {
+        VertexType {
+            semantic,size,normalize
+        }
+    }
+}
+
 pub struct VertexAttribPointer {
     semantic: SEMANTIC,
     size: u8,
@@ -27,7 +35,7 @@ pub struct VertexFormat {
 
 impl VertexFormat {
     #[allow(unused_mut)]
-    pub fn new(vertex_types: &Vec<VertexType>) -> Self {
+    pub fn new(vertex_types: Vec<VertexType>) -> Self {
         let mut offset = 0_u32;
         let len = vertex_types.len();
         let mut elements = vec![];

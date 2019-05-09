@@ -1,5 +1,8 @@
 use hypergl_core::application::Application;
 use hypergl_core::graphics::shader::Shader;
+use hypergl_core::graphics::vertex_buffer::VertexBuffer;
+use hypergl_core::graphics::vertex_format::{VertexFormat,VertexType};
+use hypergl_core::config;
 // use glow::native::Context;
 use glow::{Context, RenderLoop};
 #[cfg(target_arch = "wasm32")]
@@ -40,11 +43,12 @@ fn main() {
 
     app.renderer.set_shader_program(&mut shader);
 
-    // app.renderer.set_view_port(0, 0, 500, 300);
-    app.renderer.set_scissor(0, 0, 600, 400);
-    unsafe {
-        app.renderer.gl.enable(glow::SCISSOR_TEST);
-    }
+    let vertexs = [-0.5, -0.5, 0.0, 0.5, -0.5, 0.0, 0.0, 0.5, 0.0];
+    
+    let arr:Vec<VertexType> = vec![VertexType::new(config::SEMANTIC::POSITION,3,false)];
+    let format = VertexFormat::new(arr);
+    let vertexbuffer = VertexBuffer::new(format, 3, glow::STATIC_DRAW, Box::new(vertexs));
+    
 
     let gl = app.renderer.gl;
     #[cfg(not(target_arch = "wasm32"))]

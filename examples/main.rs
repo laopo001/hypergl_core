@@ -77,8 +77,8 @@ fn main() {
         };
 
 
-        let vertex_shader_source = include_str!("./main2.vert");
-        let fragment_shader_source = include_str!("./main2.frag");
+        let vertex_shader_source = include_str!("./main1.vert");
+        let fragment_shader_source = include_str!("./main1.frag");
         let shader_sources = [
             (
                 glow::VERTEX_SHADER,
