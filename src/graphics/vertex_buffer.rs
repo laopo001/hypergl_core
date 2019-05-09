@@ -8,7 +8,7 @@ pub struct VertexBuffer<T: glow::Context> {
     pub buffer_id: Option<T::Buffer>,
     format: VertexFormat,
     num_vertices: u32,
-    buffer: Box<[u8]>,
+    buffer: Box<[f64]>,
     usage: u32,
 }
 
@@ -17,7 +17,7 @@ impl<T: glow::Context> VertexBuffer<T> {
         format: VertexFormat,
         num_vertices: u32,
         usage: u32,
-        data: Box<[u8]>,
+        data: Box<[f64]>,
     ) -> VertexBuffer<T> {
         VertexBuffer {
             buffer_id: None,
@@ -36,7 +36,7 @@ impl<T: glow::Context> VertexBuffer<T> {
                 let t = renderer.gl.create_buffer().unwrap();
                 self.buffer_id = Some(t);
                 renderer.gl.bind_buffer(glow::ARRAY_BUFFER, self.buffer_id);
-                renderer.gl.buffer_data_u8_slice(
+                renderer.gl.buffer_data_f64_slice(
                     glow::ARRAY_BUFFER,
                     self.buffer.as_ref(),
                     self.usage,

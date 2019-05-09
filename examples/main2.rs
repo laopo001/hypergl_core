@@ -17,9 +17,6 @@ fn main() {
     #[cfg(not(target_arch = "wasm32"))]
     let mut app = Application::<glow::native::Context>::new_opengl("123");
 
-    #[cfg(all(target_arch = "wasm32", feature = "webgl1"))]
-    let mut app = Application::<glow::web::Context>::new_webgl1("123");
-
     #[cfg(all(target_arch = "wasm32", not(feature = "webgl1")))]
     let mut app = Application::<glow::web::Context>::new_webgl2("123");
 
@@ -41,14 +38,14 @@ fn main() {
         fragment_shader_source.to_string(),
     );
 
-    app.renderer.set_shader_program(&mut shader);
-
     let vertexs = [-0.5, -0.5, 0.0, 0.5, -0.5, 0.0, 0.0, 0.5, 0.0];
     
     let arr:Vec<VertexType> = vec![VertexType::new(config::SEMANTIC::POSITION,3,false)];
     let format = VertexFormat::new(arr);
-    let vertexbuffer = VertexBuffer::new(format, 3, glow::STATIC_DRAW, Box::new(vertexs));
-    
+    let mut vertexbuffer = VertexBuffer::<glow::web::Context>::new(format, 3, glow::STATIC_DRAW, Box::new(vertexs));
+    vertexbuffer.bind(&app.renderer);
+
+    app.renderer.set_shader_program(&mut shader);
 
     let gl = app.renderer.gl;
     #[cfg(not(target_arch = "wasm32"))]
