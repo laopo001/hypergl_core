@@ -71,11 +71,30 @@ impl<'a, T: glow::Context> Shader<'a, T> {
                 .detach_shader(program, self.fshader.unwrap());
             self.renderer.gl.delete_shader(self.fshader.unwrap());
 
-            let count = self
+            let attribs_count = self
+                .renderer
+                .gl
+                .get_active_attribs(program);
+            // ! gl_VertexID 内置变量也计算在active_attrib中
+            let mut i = 0;
+            while (i < attribs_count) {
+                let info = self.renderer.gl.get_active_attrib(program, i).unwrap();
+                console_log(info.name.to_string());
+                i+=1;
+            }
+
+            i = 0;
+            let uniforms_count = self
                 .renderer
                 .gl
                 .get_active_uniforms(program);
-            console_log(count.to_string());
+            console_log("=====");
+            while (i < uniforms_count) {
+                let info = self.renderer.gl.get_active_uniform(program, i).unwrap();
+                console_log(info.name.to_string());
+                i+=1;
+            }
+            
             self.ready = true;
         }
     }
