@@ -1,7 +1,32 @@
 use crate::graphics::renderer::RendererPlatform;
 use crate::graphics::shader_variable::{GL_Location, ShaderVariable};
+use crate::config;
 use crate::utils::{console_error, console_log};
+use std::collections::HashMap;
 static mut SHADER_ID: usize = 0;
+
+enum UniformValueType = {
+    BOOL(bool),
+    INT(i32),
+    FLOAT(f32),
+    FLOAT_VEC2([f32;2]),
+    FLOAT_VEC3([f32;3]),
+    FLOAT_VEC4([f32;4]),
+    INT_VEC2([i32;2]),
+    INT_VEC3([i32;3]),
+    INT_VEC4([i32;4]),
+    BOOL_VEC2([bool;2]),
+    BOOL_VEC3([bool;3]),
+    BOOL_VEC4([bool;4]),
+    FLOAT_MAT2([f32;4]),
+    FLOAT_MAT3([f32;9]),
+    FLOAT_MAT4([f32;16]),
+    SAMPLER_2D,
+    SAMPLER_CUBE,
+    SAMPLER_2D_SHADOW,
+    SAMPLER_CUBE_SHADOW,
+    SAMPLER_3D,
+}
 
 pub struct Shader<'a, T: glow::Context> {
     pub shader_id: usize,
@@ -15,6 +40,7 @@ pub struct Shader<'a, T: glow::Context> {
     pub uniforms: Vec<ShaderVariable<T>>,
     pub samplers: Vec<ShaderVariable<T>>,
     pub ready: bool,
+    pub uniformScope:HashMap<&'str,UniformValueType>
 }
 
 impl<'a, T: glow::Context> Shader<'a, T> {
@@ -32,6 +58,7 @@ impl<'a, T: glow::Context> Shader<'a, T> {
                 uniforms: vec![],
                 samplers: vec![],
                 ready: false,
+                uniformScope:HashMap::new(),
             };
             SHADER_ID += 1;
             s.compile();
