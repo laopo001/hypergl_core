@@ -1,8 +1,8 @@
 use hypergl_core::application::Application;
-use hypergl_core::graphics::shader::Shader;
-use hypergl_core::graphics::vertex_buffer::VertexBuffer;
-use hypergl_core::graphics::vertex_format::{VertexFormat,VertexType};
 use hypergl_core::config;
+use hypergl_core::graphics::vertex_buffer::VertexBuffer;
+use hypergl_core::graphics::shader::Shader;
+use hypergl_core::graphics::vertex_format::{VertexFormat, VertexType};
 // use glow::native::Context;
 use glow::{Context, RenderLoop};
 #[cfg(target_arch = "wasm32")]
@@ -39,11 +39,18 @@ fn main() {
     );
 
     let vertexs = [-0.5, -0.5, 0.0, 0.5, -0.5, 0.0, 0.0, 0.5, 0.0];
-    
-    let arr:Vec<VertexType> = vec![VertexType::new(config::SEMANTIC::POSITION,3,false)];
-    let format = VertexFormat::new(arr);
-    let mut vertexbuffer = VertexBuffer::<glow::web::Context>::new(format, 3, glow::STATIC_DRAW, Box::new(vertexs));
-    vertexbuffer.bind(&app.renderer);
+    #[cfg(all(target_arch = "wasm32"))]
+    {
+        let arr: Vec<VertexType> = vec![VertexType::new(config::SEMANTIC::POSITION, 3, false)];
+        let format = VertexFormat::new(arr);
+        let mut vertexbuffer = VertexBuffer::<glow::web::Context>::new(
+            format,
+            3,
+            glow::STATIC_DRAW,
+            Box::new(vertexs),
+        );
+        vertexbuffer.bind(&app.renderer);
+    }
 
     app.renderer.set_shader_program(&mut shader);
 

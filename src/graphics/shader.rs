@@ -1,26 +1,26 @@
-use crate::graphics::renderer::RendererPlatform;
-use crate::graphics::shader_variable::{GL_Location, ShaderVariable};
 use crate::config;
 use crate::utils::{console_error, console_log};
+use crate::graphics::renderer::RendererPlatform;
+use crate::graphics::shader_variable::{GL_Location, ShaderVariable};
 use std::collections::HashMap;
 static mut SHADER_ID: usize = 0;
 
-enum UniformValueType = {
+pub enum UniformValueType {
     BOOL(bool),
     INT(i32),
     FLOAT(f32),
-    FLOAT_VEC2([f32;2]),
-    FLOAT_VEC3([f32;3]),
-    FLOAT_VEC4([f32;4]),
-    INT_VEC2([i32;2]),
-    INT_VEC3([i32;3]),
-    INT_VEC4([i32;4]),
-    BOOL_VEC2([bool;2]),
-    BOOL_VEC3([bool;3]),
-    BOOL_VEC4([bool;4]),
-    FLOAT_MAT2([f32;4]),
-    FLOAT_MAT3([f32;9]),
-    FLOAT_MAT4([f32;16]),
+    FLOAT_VEC2([f32; 2]),
+    FLOAT_VEC3([f32; 3]),
+    FLOAT_VEC4([f32; 4]),
+    INT_VEC2([i32; 2]),
+    INT_VEC3([i32; 3]),
+    INT_VEC4([i32; 4]),
+    BOOL_VEC2([bool; 2]),
+    BOOL_VEC3([bool; 3]),
+    BOOL_VEC4([bool; 4]),
+    FLOAT_MAT2([f32; 4]),
+    FLOAT_MAT3([f32; 9]),
+    FLOAT_MAT4([f32; 16]),
     SAMPLER_2D,
     SAMPLER_CUBE,
     SAMPLER_2D_SHADOW,
@@ -40,7 +40,7 @@ pub struct Shader<'a, T: glow::Context> {
     pub uniforms: Vec<ShaderVariable<T>>,
     pub samplers: Vec<ShaderVariable<T>>,
     pub ready: bool,
-    pub uniformScope:HashMap<&'str,UniformValueType>
+    pub uniformScope: HashMap<String, UniformValueType>,
 }
 
 impl<'a, T: glow::Context> Shader<'a, T> {
@@ -58,7 +58,7 @@ impl<'a, T: glow::Context> Shader<'a, T> {
                 uniforms: vec![],
                 samplers: vec![],
                 ready: false,
-                uniformScope:HashMap::new(),
+                uniformScope: HashMap::new(),
             };
             SHADER_ID += 1;
             s.compile();
@@ -98,46 +98,48 @@ impl<'a, T: glow::Context> Shader<'a, T> {
                 .detach_shader(program, self.fshader.unwrap());
             self.renderer.gl.delete_shader(self.fshader.unwrap());
 
-            let attribs_count = self
-                .renderer
-                .gl
-                .get_active_attribs(program);
+            let attribs_count = self.renderer.gl.get_active_attribs(program);
             // ! gl_VertexID 内置变量也计算在active_attrib中
             let mut i = 0;
             while i < attribs_count {
                 let info = self.renderer.gl.get_active_attrib(program, i).unwrap();
                 console_log(&info.name);
                 if info.name.as_str() == "gl_VertexID" {
-                    i+=1;
+                    i += 1;
                     continue;
                 }
-                let location = self.renderer.gl.get_attrib_location(self.program.unwrap(), &info.name) as u32;
+                let location = self
+                    .renderer
+                    .gl
+                    .get_attrib_location(self.program.unwrap(), &info.name)
+                    as u32;
                 self.attributes.push(ShaderVariable::new(
-                    &info.name, 
+                    &info.name,
                     *self.renderer.gl_to_rs_map.get(&info.utype).unwrap(),
                     GL_Location::AttribLocation(location),
                 ));
-                i+=1;
+                i += 1;
             }
             console_log("=====");
             i = 0;
-            let uniforms_count = self
-                .renderer
-                .gl
-                .get_active_uniforms(program);
-            
+            let uniforms_count = self.renderer.gl.get_active_uniforms(program);
+
             while i < uniforms_count {
                 let info = self.renderer.gl.get_active_uniform(program, i).unwrap();
                 console_log(info.name.to_string());
-                let location = self.renderer.gl.get_uniform_location(self.program.unwrap(), &info.name).unwrap();
+                let location = self
+                    .renderer
+                    .gl
+                    .get_uniform_location(self.program.unwrap(), &info.name)
+                    .unwrap();
                 self.attributes.push(ShaderVariable::new(
-                    &info.name, 
+                    &info.name,
                     *self.renderer.gl_to_rs_map.get(&info.utype).unwrap(),
                     GL_Location::UniformLocation(location),
                 ));
-                i+=1;
+                i += 1;
             }
-            
+
             self.ready = true;
         }
     }
