@@ -6,7 +6,7 @@ pub struct Application<T: glow::Context> {
 
 impl<T: glow::Context> Application<T> {
     #[cfg(all(target_arch = "wasm32", feature = "webgl1"))]
-    pub fn new_webgl1(title: &str) -> Application<impl glow::Context> {
+    pub fn new_webgl1(title: &str) -> Application<glow::web::Context> {
         Application {
             renderer: RendererPlatform::<T>::new_webgl1(title),
         }

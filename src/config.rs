@@ -1,12 +1,26 @@
+type IntoString = Into<String>;
+
 /// 定义顶点输入
-#[derive(Copy, Clone)]
+#[derive(Clone)]
 pub enum SEMANTIC {
-    POSITION,
-    NORMAL,
-    TANGENT,
-    COLOR,
-    TEXCOORD0,
-    TEXCOORD1,
+    POSITION(String),
+    NORMAL(String),
+    TANGENT(String),
+    COLOR(String),
+    TEXCOORD0(String),
+    TEXCOORD1(String),
+}
+impl SEMANTIC {
+    pub fn to_string(&self) -> String {
+        match self {
+            SEMANTIC::POSITION(s) => s.to_string(),
+            SEMANTIC::NORMAL(s) => s.to_string(),
+            SEMANTIC::TANGENT(s) => s.to_string(),
+            SEMANTIC::COLOR(s) => s.to_string(),
+            SEMANTIC::TEXCOORD0(s) => s.to_string(),
+            SEMANTIC::TEXCOORD1(s) => s.to_string(),
+        }
+    }
 }
 
 #[derive(Copy, Clone)]

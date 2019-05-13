@@ -1,5 +1,5 @@
 use crate::config::SEMANTIC;
-
+use crate::utils::{console_error, console_log};
 pub struct VertexType {
     semantic: SEMANTIC,
     size: u8,
@@ -15,11 +15,11 @@ impl VertexType {
 }
 
 pub struct VertexAttribPointer {
-    semantic: SEMANTIC,
-    size: u8,
-    normalize: bool,
-    offset: u32,
-    stride: u32,
+    pub semantic: SEMANTIC,
+    pub size: u8,
+    pub normalize: bool,
+    pub offset: u32,
+    pub stride: u32,
     // length: u32,
 }
 
@@ -42,22 +42,22 @@ impl VertexFormat {
         let mut has_uv0: bool = false;
         let mut has_uv1: bool = false;
         let mut has_color: bool = false;
-        for i in 0..len {
-            let item = &vertex_types[i];
+        for item in vertex_types {
+            // let item = &vertex_types[i];
             offset += item.size as u32 * F32_BYTES_SIZE;
             let element = VertexAttribPointer {
-                semantic: item.semantic,
                 offset,
                 size: item.size,
                 normalize: item.normalize,
                 stride: 0,
+                semantic: item.semantic,
             };
-            elements.push(element);
-            match item.semantic {
+            match &element.semantic {
                 TEXCOORD0 => has_uv0 = true,
                 TEXCOORD1 => has_uv1 = true,
                 COLOR => has_color = true,
             }
+            elements.push(element);
         }
         for i in 0..len {
             elements[i].stride = offset;

@@ -132,7 +132,7 @@ impl<'a, T: glow::Context> Shader<'a, T> {
                     .gl
                     .get_uniform_location(self.program.unwrap(), &info.name)
                     .unwrap();
-                self.attributes.push(ShaderVariable::new(
+                self.uniforms.push(ShaderVariable::new(
                     &info.name,
                     *self.renderer.gl_to_rs_map.get(&info.utype).unwrap(),
                     GL_Location::UniformLocation(location),

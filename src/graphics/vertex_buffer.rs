@@ -6,10 +6,10 @@ use crate::graphics::vertex_format::VertexFormat;
 
 pub struct VertexBuffer<T: glow::Context> {
     pub buffer_id: Option<T::Buffer>,
-    format: VertexFormat,
-    num_vertices: u32,
-    buffer: Box<[f64]>,
-    usage: u32,
+    pub format: VertexFormat,
+    pub num_vertices: u32,
+    pub buffer: Box<[f64]>,
+    pub usage: u32,
 }
 
 impl<T: glow::Context> VertexBuffer<T> {
