@@ -46,7 +46,11 @@ fn main() {
 
     #[cfg(all(target_arch = "wasm32"))]
     unsafe {
-        let arr: Vec<VertexType> = vec![VertexType::new(config::SEMANTIC::POSITION("position".to_string()), 3, false)];
+        let arr: Vec<VertexType> = vec![VertexType::new(
+            config::SEMANTIC::POSITION("position".to_string()),
+            3,
+            false,
+        )];
         let format = VertexFormat::new(arr);
         let mut vertexbuffer = VertexBuffer::<glow::web::Context>::new(
             format,
@@ -56,33 +60,46 @@ fn main() {
         );
         vertexbuffer.bind(&app.renderer);
         for attrbute in shader.attributes.iter() {
-            let element = vertexbuffer.format.elements.iter().find(|&x| {
-                console_log(attrbute.name.to_string()); 
-                return x.semantic.to_string() == attrbute.name; 
-            }).expect("不为None");
+            let element = vertexbuffer
+                .format
+                .elements
+                .iter()
+                .find(|&x| {
+                    // console_log(attrbute.name.to_string());
+                    return x.semantic.to_string() == attrbute.name;
+                })
+                .expect("不为None");
             match attrbute.location_id {
-                GL_Location::AttribLocation(u) => { 
+                GL_Location::AttribLocation(u) => {
                     app.renderer.gl.vertex_attrib_pointer_f32(
-                        u, element.size as i32, glow::FLOAT, element.normalize, element.stride as i32, element.offset as i32
+                        u,
+                        element.size as i32,
+                        glow::FLOAT,
+                        element.normalize,
+                        element.stride as i32,
+                        element.offset as i32,
                     );
+                    app.renderer.gl.enable_vertex_attrib_array(u);
                 }
-                _ => { panic!("error"); }
+                _ => {
+                    panic!("error");
+                }
             }
         }
         let location = app
-                    .renderer
-                    .gl
-                    .get_uniform_location(shader.program.unwrap(), "matrix");
-                    
-        app.renderer.gl.uniform_matrix_4_f32_slice(location,false,&[
-            1.0,0.0,0.0,0.0,
-            0.0,1.0,0.0,0.0,
-            0.0,0.0,1.0,0.0,
-            0.0,0.0,0.0,1.0
-        ]);
+            .renderer
+            .gl
+            .get_uniform_location(shader.program.unwrap(), "matrix");
+
+        app.renderer.gl.uniform_matrix_4_f32_slice(
+            location,
+            false,
+            &[
+                1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 1.0,
+            ],
+        );
     }
 
-    
 
     let gl = app.renderer.gl;
     #[cfg(not(target_arch = "wasm32"))]
