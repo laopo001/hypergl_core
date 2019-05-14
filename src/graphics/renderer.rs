@@ -88,7 +88,7 @@ impl<T: glow::Context> RendererPlatform<T> {
         r
     }
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn new_opengl(title: &str) -> RendererPlatform<impl glow::Context> {
+    pub fn new_opengl(title: &str) -> RendererPlatform<glow::native::Context> {
         let mut events_loop = glutin::EventsLoop::new();
         let window_builder = glutin::WindowBuilder::new().with_title(title);
 

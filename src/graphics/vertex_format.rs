@@ -43,8 +43,7 @@ impl VertexFormat {
         let mut has_uv1: bool = false;
         let mut has_color: bool = false;
         for item in vertex_types {
-            // let item = &vertex_types[i];
-            offset += item.size as u32 * F32_BYTES_SIZE;
+            let offset_temp = offset + item.size as u32 * F32_BYTES_SIZE;
             let element = VertexAttribPointer {
                 offset,
                 size: item.size,
@@ -52,6 +51,7 @@ impl VertexFormat {
                 stride: 0,
                 semantic: item.semantic,
             };
+            offset = offset_temp;
             match &element.semantic {
                 TEXCOORD0 => has_uv0 = true,
                 TEXCOORD1 => has_uv1 = true,

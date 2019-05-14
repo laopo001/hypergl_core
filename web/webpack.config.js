@@ -62,7 +62,7 @@ module.exports = function (env, webpackConfig) {
         devServer: {
             contentBase: path.join(__dirname, 'build'),
             // compress: true,
-            open: 'Google Chrome',
+            // open: 'Google Chrome',
             port: 8100
         }
     };

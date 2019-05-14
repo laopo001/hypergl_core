@@ -18,7 +18,7 @@ impl<T: glow::Context> Application<T> {
         }
     }
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn new_opengl(title: &str) -> Application<impl glow::Context> {
+    pub fn new_opengl(title: &str) -> Application<glow::native::Context> {
         Application {
             renderer: RendererPlatform::<T>::new_opengl(title),
         }
