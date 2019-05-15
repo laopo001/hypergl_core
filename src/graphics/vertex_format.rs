@@ -23,7 +23,7 @@ pub struct VertexAttribPointer {
     // length: u32,
 }
 
-static F32_BYTES_SIZE: u32 = 4;
+//static F32_BYTES_SIZE: u32 = 4;
 
 pub struct VertexFormat {
     pub elements: Vec<VertexAttribPointer>,
@@ -43,7 +43,7 @@ impl VertexFormat {
         let mut has_uv1: bool = false;
         let mut has_color: bool = false;
         for item in vertex_types {
-            let offset_temp = offset + item.size as u32 * F32_BYTES_SIZE;
+            let offset_temp = offset + item.size as u32 * std::mem::size_of::<f32>() as u32;
             let element = VertexAttribPointer {
                 offset,
                 size: item.size,

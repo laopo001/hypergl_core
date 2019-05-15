@@ -48,3 +48,10 @@ js-sys = "0.3"
 default = []
 webgl1 = []
 webgl2 = []
+
+[package.metadata.commands]
+wasm-build = "cargo build --example main2 --target wasm32-unknown-unknown"
+wasm-bindgen = "wasm-bindgen target/wasm32-unknown-unknown/debug/examples/main2.wasm --out-dir web/src/"
+wbuild = "cargo cmd wasm-build && cargo cmd wasm-bindgen"
+start = "cargo run --example main2"
+build = "cargo build --example main2"
