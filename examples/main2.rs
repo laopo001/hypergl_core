@@ -125,7 +125,6 @@ fn main() {
 					});
 					window.swap_buffers();
 				}
-
 			gl.clear(glow::COLOR_BUFFER_BIT);
 			gl.draw_arrays(glow::TRIANGLES, 0, 3);
 			// gl.delete_vertex_array(vertex_array);
