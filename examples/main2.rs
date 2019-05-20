@@ -49,8 +49,8 @@ fn main() {
 
 		app.renderer.set_shader_program(&mut shader);
 
-		let vertex_array = app.renderer.gl.create_vertex_array().expect("Cannot create vertex array");
-		app.renderer.gl.bind_vertex_array(Some(vertex_array));
+//		let vertex_array = app.renderer.gl.create_vertex_array().expect("Cannot create vertex array");
+//		app.renderer.gl.bind_vertex_array(Some(vertex_array));
 
 		let arr: Vec<VertexType> = vec![VertexType::new(
 			config::SEMANTIC::POSITION("position".to_string()),
