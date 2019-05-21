@@ -45,7 +45,7 @@ fn main() {
 			fragment_shader_source.to_string(),
 		);
 
-		let vertexs = [-0.5, -0.2, 0.0, 0.2, -0.5, 0.0, 0.0, 0.5, 0.0];
+		let vertexs: [f32; 9] = [-0.5, -0.5, 0.0, 0.5, -0.5, 0.0, 0.0, 0.5, 0.0];
 
 		app.renderer.set_shader_program(&mut shader);
 
@@ -92,18 +92,18 @@ fn main() {
 				}
 			}
 		}
-		let location = app
-			.renderer
-			.gl
-			.get_uniform_location(shader.program.unwrap(), "matrix");
-
-		app.renderer.gl.uniform_matrix_4_f32_slice(
-			location,
-			false,
-			&[
-				1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 1.0,
-			],
-		);
+//		let location = app
+//			.renderer
+//			.gl
+//			.get_uniform_location(shader.program.unwrap(), "matrix");
+//
+//		app.renderer.gl.uniform_matrix_4_f32_slice(
+//			location,
+//			false,
+//			&[
+//				1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 1.0,
+//			],
+//		);
 
 
 		let gl = app.renderer.gl;
