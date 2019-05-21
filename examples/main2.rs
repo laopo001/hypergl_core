@@ -119,6 +119,13 @@ fn main() {
 					events_loop.poll_events(|event| match event {
 						glutin::Event::WindowEvent { event, .. } => match event {
 							glutin::WindowEvent::CloseRequested => *running = false,
+//							glutin::WindowEvent::Resized(w, h) => window.resize(w, h),
+							glutin::WindowEvent::KeyboardInput{ input, ..} => match input {
+								glutin::KeyboardInput { virtual_keycode, ..} => match virtual_keycode{
+									Some(x) => println!("{:?}", x),
+									_ => ()
+								},
+							},
 							_ => (),
 						},
 						_ => (),
