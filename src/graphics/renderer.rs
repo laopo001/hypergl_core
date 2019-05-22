@@ -185,6 +185,8 @@ impl<T: glow::Context> RendererPlatform<T> {
             self.gl_to_rs_map.insert(glow::SAMPLER_3D, ACTIVE_INFO_TYPE::SAMPLER_3D);
         }
     }
-    pub fn draw() {}
+    pub fn draw() {
+
+    }
 }
 

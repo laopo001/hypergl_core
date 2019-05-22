@@ -65,6 +65,9 @@ fn main() {
 			Box::new(vertexs),
 		);
 		vertexbuffer.bind(&app.renderer);
+		shader.set_uniform_value("matrix".to_string(), config::UniformValueType::FLOAT_MAT4([
+			1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 1.0,
+		]));
 		for attrbute in shader.attributes.iter() {
 			let element = vertexbuffer
 				.format
@@ -86,6 +89,32 @@ fn main() {
 						element.offset as i32,
 					);
 					app.renderer.gl.enable_vertex_attrib_array(u);
+				}
+				_ => {
+					panic!("error");
+				}
+			}
+		}
+		for uniform in shader.uniforms.iter() {
+			match uniform.location_id {
+				GL_Location::UniformLocation(u) => {
+					match shader.get_uniform_value("matrix") {
+						config::UniformValueType::FLOAT_MAT3(f) => {
+							app.renderer.gl.uniform_matrix_3_f32_slice(
+								Some(u),
+								false,
+								f,
+							);
+						}
+						config::UniformValueType::FLOAT_MAT4(f) => {
+							app.renderer.gl.uniform_matrix_4_f32_slice(
+								Some(u),
+								false,
+								f,
+							);
+						}
+						_ => {}
+					}
 				}
 				_ => {
 					panic!("error");
@@ -120,8 +149,8 @@ fn main() {
 						glutin::Event::WindowEvent { event, .. } => match event {
 							glutin::WindowEvent::CloseRequested => *running = false,
 //							glutin::WindowEvent::Resized(w, h) => window.resize(w, h),
-							glutin::WindowEvent::KeyboardInput{ input, ..} => match input {
-								glutin::KeyboardInput { virtual_keycode, ..} => match virtual_keycode{
+							glutin::WindowEvent::KeyboardInput { input, .. } => match input {
+								glutin::KeyboardInput { virtual_keycode, .. } => match virtual_keycode {
 									Some(x) => println!("{:?}", x),
 									_ => ()
 								},
