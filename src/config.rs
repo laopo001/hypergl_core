@@ -70,3 +70,13 @@ pub enum UniformValueType {
     SAMPLER_CUBE_SHADOW,
     SAMPLER_3D,
 }
+
+pub enum DrawMode {
+    POINTS,
+    LINES, // 每一对顶点被解释为一条直线
+    LINE_LOOP, // 头尾相连
+    LINE_STRIP, // 一系列的连续直线
+    TRIANGLES,
+    TRIANGLE_STRIP,
+    TRIANGLE_FAN,
+}
