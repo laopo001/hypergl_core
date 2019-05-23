@@ -64,7 +64,8 @@ fn main() {
 			glow::STATIC_DRAW,
 			Box::new(vertexs),
 		);
-		vertexbuffer.bind(&app.renderer);
+		app.renderer.set_vertex_buffer(&mut vertexbuffer);
+//		vertexbuffer.bind(&app.renderer);
 		shader.set_uniform_value("matrix".to_string(), config::UniformValueType::FLOAT_MAT4([
 			1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 1.0,
 		]));

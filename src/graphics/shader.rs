@@ -18,7 +18,7 @@ pub struct Shader<'a, T: glow::Context> {
 	pub uniforms: Vec<ShaderVariable<T>>,
 	pub samplers: Vec<ShaderVariable<T>>,
 	pub ready: bool,
-	pub uniformScope: HashMap<String, config::UniformValueType>,
+	pub uniform_scope: HashMap<String, config::UniformValueType>,
 }
 
 impl<'a, T: glow::Context> Shader<'a, T> {
@@ -36,7 +36,7 @@ impl<'a, T: glow::Context> Shader<'a, T> {
 				uniforms: vec![],
 				samplers: vec![],
 				ready: false,
-				uniformScope: HashMap::new(),
+				uniform_scope: HashMap::new(),
 			};
 			SHADER_ID += 1;
 			s.compile();
@@ -59,10 +59,10 @@ impl<'a, T: glow::Context> Shader<'a, T> {
 		self.fshader = Some(fshader);
 	}
 	pub fn set_uniform_value(&mut self, key: String, value: config::UniformValueType) {
-		self.uniformScope.insert(key, value);
+		self.uniform_scope.insert(key, value);
 	}
 	pub fn get_uniform_value(&self, key: &str) -> &config::UniformValueType {
-		self.uniformScope.get(key).unwrap()
+		self.uniform_scope.get(key).unwrap()
 	}
 	pub fn link(&mut self) {
 		unsafe {
