@@ -18,10 +18,7 @@ pub struct RendererPlatform<T: glow::Context> {
 	pub window: Option<glutin::ContextWrapper<glutin::PossiblyCurrent, glutin::Window>>,
 	#[cfg(not(target_arch = "wasm32"))]
 	pub events_loop: Option<glutin::EventsLoop>,
-	#[cfg(not(target_arch = "wasm32"))]
-	pub render_loop: glow::native::RenderLoop,
-	#[cfg(target_arch = "wasm32")]
-	pub render_loop: glow::web::RenderLoop,
+
 	pub clear_color: [f32; 4],
 	pub last_scissor: [i32; 4],
 	pub last_viewport: [i32; 4],
@@ -29,8 +26,9 @@ pub struct RendererPlatform<T: glow::Context> {
 }
 
 impl<T: glow::Context> RendererPlatform<T> {
-	#[cfg(all(target_arch = "wasm32", feature = "webgl1"))]
-	pub fn new_webgl1(title: &str) -> RendererPlatform<glow::web::Context> {
+
+	#[cfg(all(target_arch = "wasm32"))]
+	pub fn new_webgl(title: &str) -> RendererPlatform<glow::web::Context> {
 		use wasm_bindgen::JsCast;
 		let canvas = web_sys::window()
 			.unwrap()
@@ -40,52 +38,32 @@ impl<T: glow::Context> RendererPlatform<T> {
 			.unwrap()
 			.dyn_into::<web_sys::HtmlCanvasElement>()
 			.unwrap();
-		let webgl_context = canvas
-			.get_context("webgl")
-			.unwrap()
-			.unwrap()
-			.dyn_into::<web_sys::WebGlRenderingContext>()
-			.unwrap();
-		let render_loop = glow::web::RenderLoop::from_request_animation_frame();
-		let gl = glow::web::Context::from_webgl1_context(webgl_context);
-
-		let mut r = RendererPlatform {
-			gl,
-			clear_color: [0.0, 0.0, 0.0, 1.0],
-			last_scissor: [0; 4],
-			last_viewport: [0; 4],
-			render_loop,
-			gl_to_rs_map: HashMap::new(),
+		#[cfg(all(target_arch = "wasm32", feature = "webgl1"))]
+		let gl = {
+			let webgl_context = canvas
+				.get_context("webgl")
+				.unwrap()
+				.unwrap()
+				.dyn_into::<web_sys::WebGlRenderingContext>()
+				.unwrap();
+			glow::web::Context::from_webgl1_context(webgl_context);
 		};
-		r.initialize();
-		r
-	}
-	#[cfg(all(target_arch = "wasm32", not(feature = "webgl1")))]
-	pub fn new_webgl2(title: &str) -> RendererPlatform<glow::web::Context> {
-		use wasm_bindgen::JsCast;
-		let canvas = web_sys::window()
-			.unwrap()
-			.document()
-			.unwrap()
-			.get_element_by_id("canvas")
-			.unwrap()
-			.dyn_into::<web_sys::HtmlCanvasElement>()
-			.unwrap();
-		let webgl2_context = canvas
-			.get_context("webgl2")
-			.unwrap()
-			.unwrap()
-			.dyn_into::<web_sys::WebGl2RenderingContext>()
-			.unwrap();
-		let render_loop = glow::web::RenderLoop::from_request_animation_frame();
-		let gl = glow::web::Context::from_webgl2_context(webgl2_context);
+		#[cfg(all(target_arch = "wasm32", not(feature = "webgl1")))]
+		let gl = {
+			let webgl2_context = canvas
+				.get_context("webgl2")
+				.unwrap()
+				.unwrap()
+				.dyn_into::<web_sys::WebGl2RenderingContext>()
+				.unwrap();
+			glow::web::Context::from_webgl2_context(webgl2_context)
+		};
 
 		let mut r = RendererPlatform {
 			gl,
 			clear_color: [0.0, 0.0, 0.0, 1.0],
 			last_scissor: [0; 4],
 			last_viewport: [0; 4],
-			render_loop,
 			gl_to_rs_map: HashMap::new(),
 		};
 		r.initialize();
@@ -108,8 +86,6 @@ impl<T: glow::Context> RendererPlatform<T> {
 			windowed_context.get_proc_address(s) as *const _
 		});
 
-		let render_loop = glow::native::RenderLoop::from_window();
-
 		let mut r = RendererPlatform {
 			gl: context,
 			window: Some(windowed_context),
@@ -117,7 +93,6 @@ impl<T: glow::Context> RendererPlatform<T> {
 			clear_color: [0.0, 0.0, 0.0, 1.0],
 			last_scissor: [0; 4],
 			last_viewport: [0; 4],
-			render_loop,
 			gl_to_rs_map: HashMap::new(),
 		};
 		r.initialize();

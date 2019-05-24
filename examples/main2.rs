@@ -26,7 +26,7 @@ fn main() {
 		#[cfg(target_arch = "wasm32")]
 		type Context = glow::web::Context;
 		#[cfg(target_arch = "wasm32")]
-			let mut app = Application::<glow::web::Context>::new_webgl2("123");
+			let mut app = Application::<glow::web::Context>::new_webgl("123");
 
 		let shader_version = "#version 300 es";
 
@@ -130,36 +130,37 @@ fn main() {
 		}
 
 */
+		app.start();
+//		let gl = app.renderer.gl;
+//		#[cfg(not(target_arch = "wasm32"))]
+//			let window = app.renderer.window.unwrap();
+//		#[cfg(not(target_arch = "wasm32"))]
+//			let mut events_loop = app.renderer.events_loop.unwrap();
+//
+//		app.render_loop.run(move |running: &mut bool| {
+//			// Handle events differently between targets
+//			#[cfg(not(target_arch = "wasm32"))]
+//				{
+//					events_loop.poll_events(|event| match event {
+//						glutin::Event::WindowEvent { event, .. } => match event {
+//							glutin::WindowEvent::CloseRequested => *running = false,
+////							glutin::WindowEvent::Resized(w, h) => window.resize(w, h),
+//							glutin::WindowEvent::KeyboardInput { input, .. } => match input {
+//								glutin::KeyboardInput { virtual_keycode, .. } => match virtual_keycode {
+//									Some(x) => println!("{:?}", x),
+//									_ => ()
+//								},
+//							},
+//							_ => (),
+//						},
+//						_ => (),
+//					});
+//					window.swap_buffers();
+//				}
+//			gl.clear(glow::COLOR_BUFFER_BIT);
+//			gl.draw_arrays(glow::TRIANGLES, 0, 3);
+//			// gl.delete_vertex_array(vertex_array);
+//		});
 
-		let gl = app.renderer.gl;
-		#[cfg(not(target_arch = "wasm32"))]
-			let window = app.renderer.window.unwrap();
-		#[cfg(not(target_arch = "wasm32"))]
-			let mut events_loop = app.renderer.events_loop.unwrap();
-
-		app.renderer.render_loop.run(move |running: &mut bool| {
-			// Handle events differently between targets
-			#[cfg(not(target_arch = "wasm32"))]
-				{
-					events_loop.poll_events(|event| match event {
-						glutin::Event::WindowEvent { event, .. } => match event {
-							glutin::WindowEvent::CloseRequested => *running = false,
-//							glutin::WindowEvent::Resized(w, h) => window.resize(w, h),
-							glutin::WindowEvent::KeyboardInput { input, .. } => match input {
-								glutin::KeyboardInput { virtual_keycode, .. } => match virtual_keycode {
-									Some(x) => println!("{:?}", x),
-									_ => ()
-								},
-							},
-							_ => (),
-						},
-						_ => (),
-					});
-					window.swap_buffers();
-				}
-			gl.clear(glow::COLOR_BUFFER_BIT);
-			gl.draw_arrays(glow::TRIANGLES, 0, 3);
-			// gl.delete_vertex_array(vertex_array);
-		});
 	}
 }
