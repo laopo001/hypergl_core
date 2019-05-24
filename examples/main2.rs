@@ -5,6 +5,7 @@ use hypergl_core::graphics::shader::Shader;
 use hypergl_core::graphics::vertex_format::{VertexFormat, VertexType};
 use hypergl_core::graphics::shader_variable::GL_Location;
 use hypergl_core::utils::{console_error, console_log};
+use hypergl_core::graphics::drawable::Drawable;
 // use glow::native::Context;
 use glow::{Context, RenderLoop};
 #[cfg(target_arch = "wasm32")]
@@ -45,12 +46,17 @@ fn main() {
 			fragment_shader_source.to_string(),
 		);
 
-		let vertexs: [f32; 9] = [-0.5, -0.5, 0.0, 0.5, -0.5, 0.0, 0.0, 0.5, 0.0];
-
-		app.renderer.set_shader_program(&mut shader);
-
+		shader.set_uniform_value("matrix".to_string(), config::UniformValueType::FLOAT_MAT4([
+			1.0, 0.0, 0.0, 0.0,
+			0.0, 1.0, 0.0, 0.0,
+			0.0, 0.0, 1.0, 0.0,
+			0.0, 0.0, 0.0, 1.0,
+		]));
+//		app.renderer.set_shader_program(&mut shader);
 //		let vertex_array = app.renderer.gl.create_vertex_array().expect("Cannot create vertex array");
 //		app.renderer.gl.bind_vertex_array(Some(vertex_array));
+
+		let vertexs: [f32; 9] = [-0.5, -0.5, 0.0, 0.5, -0.5, 0.0, 0.0, 0.5, 0.0];
 
 		let arr: Vec<VertexType> = vec![VertexType::new(
 			config::SEMANTIC::POSITION("position".to_string()),
@@ -64,11 +70,11 @@ fn main() {
 			glow::STATIC_DRAW,
 			Box::new(vertexs),
 		);
-		app.renderer.set_vertex_buffer(&mut vertexbuffer);
-//		vertexbuffer.bind(&app.renderer);
-		shader.set_uniform_value("matrix".to_string(), config::UniformValueType::FLOAT_MAT4([
-			1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 1.0,
-		]));
+
+		let mut drawable = Drawable::new(vertexbuffer, None);
+		app.renderer.draw(&mut drawable, &mut shader);
+
+/*
 		for attrbute in shader.attributes.iter() {
 			let element = vertexbuffer
 				.format
@@ -99,7 +105,7 @@ fn main() {
 		for uniform in shader.uniforms.iter() {
 			match uniform.location_id {
 				GL_Location::UniformLocation(u) => {
-					match shader.get_uniform_value("matrix") {
+					match shader.get_uniform_value(&uniform.name) {
 						config::UniformValueType::FLOAT_MAT3(f) => {
 							app.renderer.gl.uniform_matrix_3_f32_slice(
 								Some(u),
@@ -122,19 +128,8 @@ fn main() {
 				}
 			}
 		}
-//		let location = app
-//			.renderer
-//			.gl
-//			.get_uniform_location(shader.program.unwrap(), "matrix");
-//
-//		app.renderer.gl.uniform_matrix_4_f32_slice(
-//			location,
-//			false,
-//			&[
-//				1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 1.0,
-//			],
-//		);
 
+*/
 
 		let gl = app.renderer.gl;
 		#[cfg(not(target_arch = "wasm32"))]

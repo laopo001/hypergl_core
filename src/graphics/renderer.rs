@@ -1,9 +1,12 @@
 use crate::graphics::shader::Shader;
 use crate::graphics::vertex_buffer::VertexBuffer;
-use crate::utils::console_log;
+use crate::graphics::index_buffer::IndexBuffer;
+use crate::utils::{console_log, console_error};
 use crate::config::ACTIVE_INFO_TYPE;
 use crate::graphics::drawable::Drawable;
+use crate::graphics::shader_variable::GL_Location;
 use std::collections::HashMap;
+use crate::config;
 
 
 #[cfg(target_arch = "wasm32")]
@@ -131,6 +134,9 @@ impl<T: glow::Context> RendererPlatform<T> {
 	pub fn set_vertex_buffer(&self, vertex_buffer: &mut VertexBuffer<T>) {
 		vertex_buffer.bind(self);
 	}
+	pub fn set_index_buffer(&self, index_buffer: &mut IndexBuffer<T>) {
+		index_buffer.bind(self);
+	}
 	/// 参数 0~1 数值
 	pub fn set_clear_color(&mut self, r: f32, g: f32, b: f32, a: f32) {
 		self.clear_color[0] = r;
@@ -186,13 +192,70 @@ impl<T: glow::Context> RendererPlatform<T> {
 				self.gl_to_rs_map.insert(glow::SAMPLER_3D, ACTIVE_INFO_TYPE::SAMPLER_3D);
 			}
 	}
-	pub fn draw(&mut self, drawable: &mut Drawable<T>) {
-		self.set_vertex_buffer(&mut drawable.vertex_buffer);
-		match &mut drawable.index_buffer {
-			Some(index_buffer) => {
-
+	pub fn draw(&self, drawable: &mut Drawable<T>, shader: &mut Shader<T>) {
+		unsafe {
+			self.set_shader_program(shader);
+			self.set_vertex_buffer(&mut drawable.vertex_buffer);
+			match &mut drawable.index_buffer {
+				Some(index_buffer) => {
+					self.set_index_buffer(index_buffer);
+				}
+				None => {}
 			}
-			None => {}
+			for attrbute in shader.attributes.iter() {
+				let element = drawable.vertex_buffer
+					.format
+					.elements
+					.iter()
+					.find(|&x| {
+						// console_log(attrbute.name.to_string());
+						return x.semantic.to_string() == attrbute.name;
+					})
+					.expect("不为None");
+				match attrbute.location_id {
+					GL_Location::AttribLocation(u) => {
+						self.gl.vertex_attrib_pointer_f32(
+							u,
+							element.size as i32,
+							glow::FLOAT,
+							element.normalize,
+							element.stride as i32,
+							element.offset as i32,
+						);
+						self.gl.enable_vertex_attrib_array(u);
+					}
+					_ => {
+						panic!("error");
+					}
+				}
+			}
+
+			for uniform in shader.uniforms.iter() {
+				match uniform.location_id {
+					GL_Location::UniformLocation(u) => {
+						match shader.get_uniform_value(&uniform.name) {
+							config::UniformValueType::FLOAT_MAT3(f) => {
+								self.gl.uniform_matrix_3_f32_slice(
+									Some(u),
+									false,
+									f,
+								);
+							}
+							config::UniformValueType::FLOAT_MAT4(f) => {
+								self.gl.uniform_matrix_4_f32_slice(
+									Some(u),
+									false,
+									f,
+								);
+							}
+							_ => { panic!("error"); }
+						}
+					}
+					_ => {
+						panic!("error");
+					}
+				}
+			}
 		}
 	}
 }

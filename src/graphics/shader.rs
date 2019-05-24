@@ -62,7 +62,14 @@ impl<'a, T: glow::Context> Shader<'a, T> {
 		self.uniform_scope.insert(key, value);
 	}
 	pub fn get_uniform_value(&self, key: &str) -> &config::UniformValueType {
-		self.uniform_scope.get(key).unwrap()
+//		self.uniform_scope.get(key).unwrap()
+		match self.uniform_scope.get(key) {
+			Some(value) => { value }
+			None => {
+				console_error(format!("uniform_scope没找到{:?}", key));
+				panic!("")
+			}
+		}
 	}
 	pub fn link(&mut self) {
 		unsafe {

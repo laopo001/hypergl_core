@@ -16,7 +16,7 @@ pub fn console_log<T: std::fmt::Debug>(s: T) {
 	log(&format!("{:?}",s));
 }
 
-pub fn console_error<T: AsRef<str>>(s: T) {
+pub fn console_error<T: std::fmt::Debug>(s: T) {
 	// js_sys::Error::new(s);
-	error(s.as_ref());
+	error(&format!("{:?}",s));
 }
