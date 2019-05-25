@@ -1,4 +1,5 @@
 use crate::graphics::renderer::RendererPlatform;
+use crate::utils;
 use glow::RenderLoop;
 
 static FPS: u32 = 60;
@@ -35,6 +36,8 @@ impl<T: glow::Context + 'static> Application<T> {
 		#[cfg(not(target_arch = "wasm32"))]
 			let mut events_loop = self.renderer.events_loop.unwrap();
 		self.render_loop.run(move |running: &mut bool| unsafe {
+			utils::console_log(utils::Time::now());
+
 			#[cfg(not(target_arch = "wasm32"))] {
 				events_loop.poll_events(|event| match event {
 					glutin::Event::WindowEvent { event, .. } => match event {
