@@ -6,7 +6,7 @@ use hypergl_core::graphics::vertex_format::{VertexFormat, VertexType};
 use hypergl_core::graphics::shader_variable::GL_Location;
 use hypergl_core::utils::{console_error, console_log};
 use hypergl_core::graphics::drawable::Drawable;
-// use glow::native::Context;
+
 use glow::{Context, RenderLoop};
 #[cfg(target_arch = "wasm32")]
 use wasm_bindgen::prelude::*;
