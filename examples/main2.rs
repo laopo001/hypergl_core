@@ -6,8 +6,8 @@ use hypergl_core::graphics::vertex_format::{VertexFormat, VertexType};
 use hypergl_core::graphics::shader_variable::GL_Location;
 use hypergl_core::utils::{console_error, console_log};
 use hypergl_core::graphics::drawable::Drawable;
-
 use glow::{Context, RenderLoop};
+use wasm_math::mat4::Mat4;
 #[cfg(target_arch = "wasm32")]
 use wasm_bindgen::prelude::*;
 
@@ -52,7 +52,8 @@ fn main() {
 			0.0, 0.0, 1.0, 0.0,
 			0.0, 0.0, 0.0, 1.0,
 		]));
-//		app.renderer.set_shader_program(&mut shader);
+
+		console_log(Mat4::default().data());
 //		let vertex_array = app.renderer.gl.create_vertex_array().expect("Cannot create vertex array");
 //		app.renderer.gl.bind_vertex_array(Some(vertex_array));
 
@@ -74,93 +75,7 @@ fn main() {
 		let mut drawable = Drawable::new(vertexbuffer, None);
 		app.renderer.draw(&mut drawable, &mut shader);
 
-/*
-		for attrbute in shader.attributes.iter() {
-			let element = vertexbuffer
-				.format
-				.elements
-				.iter()
-				.find(|&x| {
-					// console_log(attrbute.name.to_string());
-					return x.semantic.to_string() == attrbute.name;
-				})
-				.expect("不为None");
-			match attrbute.location_id {
-				GL_Location::AttribLocation(u) => {
-					app.renderer.gl.vertex_attrib_pointer_f32(
-						u,
-						element.size as i32,
-						glow::FLOAT,
-						element.normalize,
-						element.stride as i32,
-						element.offset as i32,
-					);
-					app.renderer.gl.enable_vertex_attrib_array(u);
-				}
-				_ => {
-					panic!("error");
-				}
-			}
-		}
-		for uniform in shader.uniforms.iter() {
-			match uniform.location_id {
-				GL_Location::UniformLocation(u) => {
-					match shader.get_uniform_value(&uniform.name) {
-						config::UniformValueType::FLOAT_MAT3(f) => {
-							app.renderer.gl.uniform_matrix_3_f32_slice(
-								Some(u),
-								false,
-								f,
-							);
-						}
-						config::UniformValueType::FLOAT_MAT4(f) => {
-							app.renderer.gl.uniform_matrix_4_f32_slice(
-								Some(u),
-								false,
-								f,
-							);
-						}
-						_ => {}
-					}
-				}
-				_ => {
-					panic!("error");
-				}
-			}
-		}
-
-*/
 		app.start();
-//		let gl = app.renderer.gl;
-//		#[cfg(not(target_arch = "wasm32"))]
-//			let window = app.renderer.window.unwrap();
-//		#[cfg(not(target_arch = "wasm32"))]
-//			let mut events_loop = app.renderer.events_loop.unwrap();
-//
-//		app.render_loop.run(move |running: &mut bool| {
-//			// Handle events differently between targets
-//			#[cfg(not(target_arch = "wasm32"))]
-//				{
-//					events_loop.poll_events(|event| match event {
-//						glutin::Event::WindowEvent { event, .. } => match event {
-//							glutin::WindowEvent::CloseRequested => *running = false,
-////							glutin::WindowEvent::Resized(w, h) => window.resize(w, h),
-//							glutin::WindowEvent::KeyboardInput { input, .. } => match input {
-//								glutin::KeyboardInput { virtual_keycode, .. } => match virtual_keycode {
-//									Some(x) => println!("{:?}", x),
-//									_ => ()
-//								},
-//							},
-//							_ => (),
-//						},
-//						_ => (),
-//					});
-//					window.swap_buffers();
-//				}
-//			gl.clear(glow::COLOR_BUFFER_BIT);
-//			gl.draw_arrays(glow::TRIANGLES, 0, 3);
-//			// gl.delete_vertex_array(vertex_array);
-//		});
 
 	}
 }
