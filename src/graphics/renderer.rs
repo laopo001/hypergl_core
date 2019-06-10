@@ -1,7 +1,7 @@
 use crate::graphics::shader::Shader;
 use crate::graphics::vertex_buffer::VertexBuffer;
 use crate::graphics::index_buffer::IndexBuffer;
-use crate::utils::{console_log, console_error};
+use crate::utils::{console};
 use crate::config::ACTIVE_INFO_TYPE;
 use crate::graphics::drawable::Drawable;
 use crate::graphics::shader_variable::GL_Location;
@@ -183,7 +183,7 @@ impl<T: glow::Context> RendererPlatform<T> {
 					.elements
 					.iter()
 					.find(|&x| {
-						// console_log(attrbute.name.to_string());
+						// console::log(attrbute.name.to_string());
 						return x.semantic.to_string() == attrbute.name;
 					})
 					.expect("不为None");

@@ -1,5 +1,5 @@
 use crate::config::SEMANTIC;
-use crate::utils::{console_error, console_log};
+use crate::utils::{console};
 pub struct VertexType {
     semantic: SEMANTIC,
     size: u8,

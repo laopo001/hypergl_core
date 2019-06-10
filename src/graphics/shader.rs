@@ -1,5 +1,5 @@
 use crate::config;
-use crate::utils::{console_error, console_log};
+use crate::utils::{console};
 use crate::graphics::renderer::RendererPlatform;
 use crate::graphics::shader_variable::{GL_Location, ShaderVariable};
 use std::collections::HashMap;
@@ -66,7 +66,7 @@ impl<'a, T: glow::Context> Shader<'a, T> {
 		match self.uniform_scope.get(key) {
 			Some(value) => { value }
 			None => {
-				console_error(format!("uniform_scope没找到{:?}", key));
+				console::error(format!("uniform_scope没找到{:?}", key));
 				panic!("")
 			}
 		}
@@ -76,7 +76,7 @@ impl<'a, T: glow::Context> Shader<'a, T> {
 			let program = self.program.expect("必须先执行compile");
 			self.renderer.gl.link_program(program);
 			if !self.renderer.gl.get_program_link_status(program) {
-				console_error(self.renderer.gl.get_program_info_log(program));
+				console::error(self.renderer.gl.get_program_info_log(program));
 				panic!(self.renderer.gl.get_program_info_log(program));
 			}
 			// let num_attributes = self.renderer.gl.get_program_paramater();
@@ -94,7 +94,7 @@ impl<'a, T: glow::Context> Shader<'a, T> {
 			let mut i = 0;
 			while i < attribs_count {
 				let info = self.renderer.gl.get_active_attrib(program, i).unwrap();
-				console_log(&info.name);
+				console::log(&info.name);
 				if info.name.as_str() == "gl_VertexID" {
 					i += 1;
 					continue;
@@ -111,13 +111,13 @@ impl<'a, T: glow::Context> Shader<'a, T> {
 				));
 				i += 1;
 			}
-			console_log("=====");
+			console::log("=====");
 			i = 0;
 			let uniforms_count = self.renderer.gl.get_active_uniforms(program);
 
 			while i < uniforms_count {
 				let info = self.renderer.gl.get_active_uniform(program, i).unwrap();
-				console_log(info.name.to_string());
+				console::log(info.name.to_string());
 				let location = self
 					.renderer
 					.gl
@@ -158,8 +158,8 @@ pub fn load_shader<T>(gl: &T, shader_type: u32, source: &str) -> T::Shader
 		gl.compile_shader(shader);
 		// dbg!(gl.get_shader_compile_status(shader), source, shader);
 		if !gl.get_shader_compile_status(shader) {
-			console_error(gl.get_shader_info_log(shader));
-			console_log(source);
+			console::error(gl.get_shader_info_log(shader));
+			console::log(source);
 			panic!(gl.get_shader_info_log(shader));
 		}
 		return shader;

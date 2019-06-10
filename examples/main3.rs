@@ -8,6 +8,8 @@ use hypergl_core::utils::{console};
 use hypergl_core::graphics::drawable::Drawable;
 use glow::{Context, RenderLoop};
 use wasm_math::mat4::Mat4;
+use image::GenericImageView;
+
 #[cfg(target_arch = "wasm32")]
 use wasm_bindgen::prelude::*;
 
@@ -74,6 +76,12 @@ fn main() {
 
 		let mut drawable = Drawable::new(vertexbuffer, None);
 		app.renderer.draw(&mut drawable, &mut shader);
+
+		let img = image::open("test.jpg").unwrap();
+
+		println!("dimensions {:?}", img.dimensions());
+		println!("{:?}", img.raw_pixels());
+		img.save("test.png").unwrap();
 
 		app.start();
 
