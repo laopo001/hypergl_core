@@ -1,7 +1,0 @@
-
-[submodule "glow"]
-	path = glow
-	url = git@github.com:laopo001/glow.git
-[submodule "wasm-math"]
-	path = wasm-math
-	url = git@github.com:laopo001/wasm-math.git
