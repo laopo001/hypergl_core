@@ -7,9 +7,9 @@ use winit::{
 };
 
 pub struct App {
-    surface: wgpu::Surface,
-    device: wgpu::Device,
-    queue: wgpu::Queue,
+    pub surface: wgpu::Surface,
+    pub device: wgpu::Device,
+    pub queue: wgpu::Queue,
 }
 
 impl App {
