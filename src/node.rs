@@ -1,12 +1,3 @@
-pub type Float = f32;
-pub type Vector3 = na::Vector3<Float>;
-pub type Quaternion = na::Quaternion<Float>;
-pub type Matrix4 = na::Matrix4<Float>;
-pub type Transform3 = na::Transform3<Float>;
-pub type Point3 = na::Point3<Float>;
-pub type Isometry3 = na::Isometry3<Float>;
-pub type UnitQuaternion = na::UnitQuaternion<Float>;
-
 #[allow(unused_imports)]
 use std::cell::{RefCell, UnsafeCell};
 #[allow(unused_imports)]
@@ -15,6 +6,8 @@ use std::ops::Deref;
 use std::rc::{Rc, Weak};
 
 use na::ComplexField;
+
+use crate::{Float, Isometry3, Matrix4, UnitQuaternion, Vector3, PI};
 
 #[derive(Debug)]
 pub struct Node {
@@ -154,7 +147,7 @@ fn test_local_position() {
     let mut node = Node::new();
 
     node.set_local_position(1., 1., 1.);
-    node.set_local_euler_angle(0.5 * std::f32::consts::PI, 0., 0.);
+    node.set_local_euler_angle(0.5 * PI, 0., 0.);
     node.set_local_scale(1., 2., 1.);
 
     let mut child = Node::new();

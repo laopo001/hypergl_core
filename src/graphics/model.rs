@@ -1,5 +1,6 @@
 use std::ops::Range;
 
+use crate::app::App;
 use crate::graphics::material::Material;
 use crate::graphics::mesh::Mesh;
 use crate::graphics::vertex::Vertex;
@@ -12,7 +13,8 @@ impl Model {
     pub fn new(meshes: Vec<Mesh>, materials: Vec<Material>) -> Self {
         return Self { meshes, materials };
     }
-    pub fn create_plane(device: &wgpu::Device, material: Material) -> Self {
+    pub fn create_plane(app: &App, material: Material) -> Self {
+        let device = &app.device;
         const VERTICES: &[Vertex] = &[
             // 修改后的
             Vertex {
@@ -44,7 +46,7 @@ impl Model {
             materials: vec![],
         };
         model.materials.push(material);
-        mesh.material_id = Some(0);
+        mesh.material_index = Some(0);
         model.meshes.push(mesh);
 
         return model;

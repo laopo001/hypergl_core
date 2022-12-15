@@ -6,7 +6,7 @@ pub struct Mesh {
     pub vertex_buffer: wgpu::Buffer,
     pub index_buffer: wgpu::Buffer,
     pub num_elements: u32,
-    pub material_id: Option<usize>,
+    pub material_index: Option<usize>,
     pub node: *mut Node,
 }
 
@@ -27,7 +27,7 @@ impl Mesh {
             vertex_buffer,
             index_buffer,
             num_elements: INDICES.len() as u32,
-            material_id: None,
+            material_index: None,
             node: std::ptr::null_mut(),
         };
     }

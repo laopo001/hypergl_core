@@ -1,15 +1,17 @@
-use crate::graphics::texture::Texture;
+use crate::{camera, graphics::texture::Texture};
 
 use super::vertex::Vertex;
-
+use crate::app::App;
 pub struct Material {
     pub name: String,
     pub diffuse_texture: Texture,
     pub bind_group: wgpu::BindGroup,
+    pub render_pipeline: wgpu::RenderPipeline,
 }
 
 impl Material {
-    pub fn new(device: &wgpu::Device, name: String, diffuse_texture: Texture) -> Self {
+    pub fn new(app: &App, name: String, diffuse_texture: Texture) -> Self {
+        let device = &app.device;
         let bind_group = device.create_bind_group(&wgpu::BindGroupDescriptor {
             layout: &diffuse_texture.bind_group_layout,
             entries: &[
@@ -24,6 +26,7 @@ impl Material {
             ],
             label: None,
         });
+        let camera_bind_group_layout = camera::Camera::bind_group_layout(&app.device);
 
         let shader = device.create_shader_module(wgpu::ShaderModuleDescriptor {
             label: Some("Shader"),
@@ -52,7 +55,7 @@ impl Material {
                 entry_point: "fs_main",
                 targets: &[Some(wgpu::ColorTargetState {
                     // 4.
-                    format: config.format,
+                    format: app.config.format,
                     blend: Some(wgpu::BlendState::REPLACE),
                     write_mask: wgpu::ColorWrites::ALL,
                 })],
@@ -87,6 +90,7 @@ impl Material {
             name,
             diffuse_texture,
             bind_group,
+            render_pipeline,
         }
     }
 }

@@ -2,6 +2,8 @@ use anyhow::*;
 use image::GenericImageView;
 use std::num::NonZeroU32;
 
+use crate::app::App;
+
 pub struct Texture {
     pub texture: wgpu::Texture,
     pub view: wgpu::TextureView,
@@ -13,10 +15,11 @@ impl Texture {
     pub const DEPTH_FORMAT: wgpu::TextureFormat = wgpu::TextureFormat::Depth32Float;
 
     pub fn create_depth_texture(
-        device: &wgpu::Device,
+        app: &App,
         config: &wgpu::SurfaceConfiguration,
         label: &str,
     ) -> Self {
+        let device = &app.device;
         let size = wgpu::Extent3d {
             width: config.width,
             height: config.height,
@@ -77,22 +80,14 @@ impl Texture {
     }
 
     #[allow(dead_code)]
-    pub fn from_bytes(
-        device: &wgpu::Device,
-        queue: &wgpu::Queue,
-        bytes: &[u8],
-        label: &str,
-    ) -> Result<Self> {
+    pub fn from_bytes(app: &App, bytes: &[u8], label: &str) -> Result<Self> {
         let img = image::load_from_memory(bytes)?;
-        Self::from_image(device, queue, &img, label)
+        Self::from_image(app, &img, label)
     }
 
-    pub fn from_image(
-        device: &wgpu::Device,
-        queue: &wgpu::Queue,
-        img: &image::DynamicImage,
-        label: &str,
-    ) -> Result<Self> {
+    pub fn from_image(app: &App, img: &image::DynamicImage, label: &str) -> Result<Self> {
+        let device = &app.device;
+        let queue = &app.queue;
         let dimensions = img.dimensions();
         let rgba = img.to_rgba8();
 
