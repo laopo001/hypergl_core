@@ -117,7 +117,7 @@ impl App {
         };
         return app;
     }
-    pub async fn start(mut self, event_loop: EventLoop<()>, model: &Model) {
+    pub async fn start(mut self, event_loop: EventLoop<()>, model: Model) {
         event_loop.run(move |event, _, control_flow| {
             match event {
                 Event::WindowEvent {
@@ -150,7 +150,7 @@ impl App {
                 }
                 Event::RedrawRequested(window_id) if window_id == self.window.id() => {
                     // self.update();
-                    match self.render(model) {
+                    match self.render(&model) {
                         Ok(_) => {}
                         // Reconfigure the surface if it's lost or outdated
                         Err(wgpu::SurfaceError::Lost | wgpu::SurfaceError::Outdated) => {

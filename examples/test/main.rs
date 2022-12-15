@@ -5,6 +5,7 @@ use hyper_rust::graphics::mesh::Mesh;
 use hyper_rust::graphics::model::Model;
 use hyper_rust::graphics::texture::Texture;
 use hyper_rust::node::Node;
+use winit::event_loop::EventLoop;
 async fn run() -> anyhow::Result<()> {
     let event_loop = EventLoop::new();
     let mut app = App::new(event_loop, 450, 400).await;
@@ -22,7 +23,7 @@ async fn run() -> anyhow::Result<()> {
         100.0,
     );
     app.camera = Some(camera);
-    app.start(event_loop, &model).await;
+    app.start(event_loop, model).await;
     Ok(())
 }
 fn main() {
