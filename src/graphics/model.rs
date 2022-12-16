@@ -1,3 +1,4 @@
+use std::any::type_name;
 use std::ops::Range;
 
 use crate::app::App;
@@ -15,7 +16,7 @@ impl Model {
     }
     pub fn create_plane(app: &App, material: Material) -> Self {
         let device = &app.device;
-        const VERTICES: &[Vertex] = &[
+        let vertices: Vec<Vertex> = vec![
             // 修改后的
             Vertex {
                 position: [-0.0868241, 0.49240386, 0.0],
@@ -39,8 +40,8 @@ impl Model {
             }, // E
         ];
 
-        const INDICES: &[u16] = &[0, 1, 4, 1, 2, 4, 2, 3, 4];
-        let mut mesh = Mesh::new(device, VERTICES, INDICES);
+        let indices: Vec<u32> = vec![0, 1, 4, 1, 2, 4, 2, 3, 4];
+        let mut mesh = Mesh::new(device, vertices, indices);
         let mut model = Model {
             meshes: vec![],
             materials: vec![],
@@ -90,9 +91,12 @@ where
         camera_bind_group: &'b wgpu::BindGroup,
     ) {
         self.set_vertex_buffer(0, mesh.vertex_buffer.slice(..));
+
         self.set_index_buffer(mesh.index_buffer.slice(..), wgpu::IndexFormat::Uint32);
+
         self.set_bind_group(0, &material.bind_group, &[]);
         self.set_bind_group(1, camera_bind_group, &[]);
+
         self.draw_indexed(0..mesh.num_elements, 0, instances);
     }
 }

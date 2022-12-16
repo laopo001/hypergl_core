@@ -8,27 +8,31 @@ pub struct Mesh {
     pub num_elements: u32,
     pub material_index: Option<usize>,
     pub node: *mut Node,
+    pub(crate) vertices: Vec<Vertex>,
+    pub(crate) indices: Vec<u32>,
 }
 
 impl Mesh {
-    pub fn new(device: &wgpu::Device, VERTICES: &[Vertex], INDICES: &[u16]) -> Self {
+    pub fn new(device: &wgpu::Device, vertices: Vec<Vertex>, indices: Vec<u32>) -> Self {
         let vertex_buffer = device.create_buffer_init(&wgpu::util::BufferInitDescriptor {
             label: Some("Vertex Buffer"),
-            contents: bytemuck::cast_slice(VERTICES),
+            contents: bytemuck::cast_slice(vertices.as_slice()),
             usage: wgpu::BufferUsages::VERTEX,
         });
-        // 新添加!
         let index_buffer = device.create_buffer_init(&wgpu::util::BufferInitDescriptor {
             label: Some("Index Buffer"),
-            contents: bytemuck::cast_slice(INDICES),
+            contents: bytemuck::cast_slice(indices.as_slice()),
             usage: wgpu::BufferUsages::INDEX,
         });
+
         return Self {
             vertex_buffer,
             index_buffer,
-            num_elements: INDICES.len() as u32,
+            num_elements: indices.len() as u32,
             material_index: None,
             node: std::ptr::null_mut(),
+            vertices,
+            indices,
         };
     }
 }

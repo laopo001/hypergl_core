@@ -14,8 +14,8 @@ async fn run() -> anyhow::Result<()> {
     let mat = Material::new(&app, "t".to_string(), diffuse_texture);
     let model = Model::create_plane(&app, mat);
     let camera = Camera::new(
+        [2.0, 2.0, 2.0].into(),
         [0.0, 0.0, 0.0].into(),
-        [0.0, 0.0, -1.0].into(),
         [0.0, 1.0, 0.0].into(),
         1.0,
         0.25 * std::f32::consts::PI,

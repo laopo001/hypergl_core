@@ -36,8 +36,7 @@ impl App {
                 env_logger::init();
             }
         }
-        let event_loop = EventLoop::new();
-        let window = WindowBuilder::new().build(&event_loop).unwrap();
+        let window = WindowBuilder::new().build(event_loop).unwrap();
 
         #[cfg(target_arch = "wasm32")]
         {
@@ -124,29 +123,29 @@ impl App {
                     ref event,
                     window_id,
                 } if window_id == self.window.id() => {
-                    // if !state.input(event) {
-                    //     // UPDATED!
-                    //     match event {
-                    //         WindowEvent::CloseRequested
-                    //         | WindowEvent::KeyboardInput {
-                    //             input:
-                    //                 KeyboardInput {
-                    //                     state: ElementState::Pressed,
-                    //                     virtual_keycode: Some(VirtualKeyCode::Escape),
-                    //                     ..
-                    //                 },
-                    //             ..
-                    //         } => *control_flow = ControlFlow::Exit,
-                    //         WindowEvent::Resized(physical_size) => {
-                    //             state.resize(*physical_size);
-                    //         }
-                    //         WindowEvent::ScaleFactorChanged { new_inner_size, .. } => {
-                    //             // new_inner_size is &&mut so w have to dereference it twice
-                    //             state.resize(**new_inner_size);
-                    //         }
-                    //         _ => {}
-                    //     }
-                    // }
+                    if !self.input(event) {
+                        // UPDATED!
+                        match event {
+                            WindowEvent::CloseRequested
+                            | WindowEvent::KeyboardInput {
+                                input:
+                                    KeyboardInput {
+                                        state: ElementState::Pressed,
+                                        virtual_keycode: Some(VirtualKeyCode::Escape),
+                                        ..
+                                    },
+                                ..
+                            } => *control_flow = ControlFlow::Exit,
+                            WindowEvent::Resized(physical_size) => {
+                                // state.resize(*physical_size);
+                            }
+                            WindowEvent::ScaleFactorChanged { new_inner_size, .. } => {
+                                // new_inner_size is &&mut so w have to dereference it twice
+                                // state.resize(**new_inner_size);
+                            }
+                            _ => {}
+                        }
+                    }
                 }
                 Event::RedrawRequested(window_id) if window_id == self.window.id() => {
                     // self.update();
@@ -218,28 +217,21 @@ impl App {
                 let material = &model.materials[mesh.material_index.unwrap()];
                 render_pass.set_pipeline(&material.render_pipeline); //
                 if let Some(camera) = &self.camera {
-                    render_pass.set_bind_group(1, camera.bind_group.as_ref().unwrap(), &[]);
+                    // render_pass.set_bind_group(1, camera.bind_group.as_ref().unwrap(), &[]);
                     render_pass.draw_mesh(mesh, material, &camera.bind_group.as_ref().unwrap());
                 } else {
                     panic!("No camera");
                 }
-                // render_pass.set_bind_group(1, &camera_bind_group, &[]);
-                // render_pass.set_vertex_buffer(1, self.instance_buffer.slice(..));
-                // render_pass.draw_mesh(mesh, material, &camera_bind_group);
             }
-            // let mesh = &self.obj_model.meshes[0];
-            // let material = &self.obj_model.materials[mesh.material];
-            // render_pass.draw_mesh_instanced(
-            //     mesh,
-            //     material,
-            //     0..self.instances.len() as u32,
-            //     &self.camera_bind_group,
-            // );
         }
 
         self.queue.submit(std::iter::once(encoder.finish()));
         output.present();
 
         Ok(())
+    }
+
+    fn input(&self, event: &WindowEvent) -> bool {
+        false
     }
 }
