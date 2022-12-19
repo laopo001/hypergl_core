@@ -23,7 +23,7 @@ tobj = { version = "3.2.1", features = [
     "async",
 ]}
 nalgebra = "*"
-
+lazy_static = "*"
 
 [dependencies.image]
 version = "0.24"
