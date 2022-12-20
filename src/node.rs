@@ -1,62 +1,48 @@
+use std::any::Any;
 #[allow(unused_imports)]
 use std::cell::{RefCell, UnsafeCell};
 #[allow(unused_imports)]
 use std::ops::Deref;
+use std::ptr::NonNull;
 #[allow(unused_imports)]
 use std::rc::{Rc, Weak};
 
-use na::ComplexField;
-
 use crate::{Float, Isometry3, Matrix4, UnitQuaternion, Vector3, PI};
+pub trait NodeTrait: Sync + Send {
+    fn add_child(&mut self, child: Box<dyn NodeTrait>);
+    fn set_parent(&mut self, parent: Option<NonNull<dyn NodeTrait>>);
+    fn as_any(&mut self) -> &mut dyn Any;
+}
+unsafe impl Sync for Node {}
+unsafe impl Send for Node {}
 
-#[derive(Debug)]
 pub struct Node {
+    pub name: String,
     pub location_iso: Isometry3,
     pub local_scale: Vector3,
     // pub local_transform: Transform3,
     pub world_transform: Matrix4,
-    pub parent: *mut Node,
-    pub children: Vec<Node>,
+    // pub parent: *mut Node,
+    // pub children: Vec<Node>,
     _dirty_world: bool,
+    pub parent: Option<NonNull<dyn NodeTrait>>,
+    pub children: Vec<Box<dyn NodeTrait>>,
     // enabled: bool,
 }
 
-pub trait NodeTrait {
-    fn add_child(&mut self, child: Self);
-    fn set_local_position(&mut self, x: Float, y: Float, z: Float);
-    fn get_local_position(&self) -> &Vector3;
-    fn set_local_euler_angle(&mut self, x: Float, y: Float, z: Float);
-    fn get_local_euler_angle(&self) -> (Float, Float, Float);
-    fn set_local_scale(&mut self, x: Float, y: Float, z: Float);
-    fn get_local_scale(&self) -> &Vector3;
-    fn get_position(&mut self) -> Vector3;
-    fn set_position(&mut self, x: Float, y: Float, z: Float);
-    fn sync(&mut self);
-    fn parent(&mut self) -> Option<&mut Self>;
-    fn root(&self) -> &mut Self;
-    fn get_local_matrix(&self) -> Matrix4;
-    fn get_world_matrix(&mut self) -> Matrix4;
-}
-
 impl Node {
-    pub fn new() -> Self {
+    pub fn new(name: &str) -> Self {
         return Self {
             location_iso: Isometry3::identity(),
             local_scale: Vector3::new(1.0, 1.0, 1.0),
             // local_transform: Transform3::default(),
             world_transform: Matrix4::identity(),
-            parent: std::ptr::null_mut(),
+            parent: None,
             children: vec![],
             _dirty_world: false,
+            name: name.to_string(),
             // enabled: true,
         };
-    }
-}
-
-impl NodeTrait for Node {
-    fn add_child(&mut self, mut child: Self) {
-        child.parent = self;
-        self.children.push(child);
     }
     fn set_local_position(&mut self, x: Float, y: Float, z: Float) {
         self.location_iso.translation.vector.x = x;
@@ -104,40 +90,74 @@ impl NodeTrait for Node {
         return self.world_transform;
     }
     fn sync(&mut self) {
-        if self.parent != std::ptr::null_mut() {
-            unsafe {
-                let p = &*self.parent;
-                self.world_transform = p.get_local_matrix() * self.get_local_matrix();
+        unsafe {
+            if self.parent.is_some() {
+                unsafe {
+                    let p = self
+                        .parent
+                        .unwrap()
+                        .as_mut()
+                        .as_any()
+                        .downcast_mut::<Node>()
+                        .unwrap();
+                    self.world_transform = p.get_local_matrix() * self.get_local_matrix();
+                    self._dirty_world = true;
+                }
+            } else {
+                self.world_transform = self.get_local_matrix();
                 self._dirty_world = true;
             }
-        } else {
-            self.world_transform = self.get_local_matrix();
-            self._dirty_world = true;
-        }
-        for child in self.children.iter_mut() {
-            child.sync();
+            for child in self.children.iter_mut() {
+                child
+                    .as_mut()
+                    .as_any()
+                    .downcast_mut::<Node>()
+                    .unwrap()
+                    .sync();
+            }
         }
     }
     fn parent(&mut self) -> Option<&mut Self> {
         unsafe {
-            if self.parent != std::ptr::null_mut() {
-                return Some(&mut *self.parent);
+            if self.parent.is_some() {
+                return Some(
+                    self.parent
+                        .unwrap()
+                        .as_mut()
+                        .as_any()
+                        .downcast_mut::<Node>()
+                        // .downcast_ref::<Node>()
+                        .unwrap(),
+                );
             } else {
                 None
             }
         }
     }
-    fn root(&self) -> &mut Self {
+    fn root(&mut self) -> &mut Self {
         unsafe {
-            let mut curr = &mut *self.parent;
+            let mut curr = self.parent();
             loop {
-                if curr.parent != std::ptr::null_mut() {
-                    curr = &mut *curr.parent;
+                if curr.is_some() {
+                    curr = curr.unwrap().parent();
                 } else {
-                    return &mut *curr;
+                    return &mut *self;
                 }
             }
         }
+    }
+}
+
+impl NodeTrait for Node {
+    fn add_child(&mut self, mut child: Box<dyn NodeTrait>) {
+        child.set_parent(NonNull::new(self));
+        self.children.push(child);
+    }
+    fn set_parent(&mut self, parent: Option<NonNull<dyn NodeTrait>>) {
+        self.parent = parent;
+    }
+    fn as_any(&mut self) -> &mut dyn Any {
+        self
     }
 }
 
@@ -160,17 +180,22 @@ fn relative_eq(a: Vec<Float>, b: Vec<Float>) -> bool {
 
 #[test]
 fn test_local_position() {
-    let mut node = Node::new();
+    let mut node = Node::new("root");
 
     node.set_local_position(1., 1., 1.);
     node.set_local_euler_angle(0.5 * PI, 0., 0.);
     node.set_local_scale(1., 2., 1.);
 
-    let mut child = Node::new();
+    let mut child = Node::new("child");
     child.set_local_position(0., 2., 0.);
-    node.add_child(child);
+    node.add_child(Box::new(child));
     unsafe {
-        let a = node.children[0].get_position();
+        let a = node.children[0]
+            .as_mut()
+            .as_any()
+            .downcast_mut::<Node>()
+            .unwrap()
+            .get_position();
         let b = Vector3::new(1., 1., 5.);
         assert!(relative_eq(
             a.data.as_slice().to_vec(),
