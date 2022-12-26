@@ -12,6 +12,10 @@ pub trait NodeTrait: Sync + Send {
     fn add_child(&mut self, child: Box<dyn NodeTrait>);
     fn set_parent(&mut self, parent: Option<NonNull<dyn NodeTrait>>);
     fn as_any(&mut self) -> &mut dyn Any;
+    fn sync(&mut self);
+    fn get_local_matrix(&self) -> Matrix4;
+    fn parent(&mut self) -> Option<NonNull<dyn NodeTrait>>;
+    fn root(&mut self) -> NonNull<dyn NodeTrait>;
 }
 unsafe impl Sync for Node {}
 unsafe impl Send for Node {}
@@ -44,106 +48,46 @@ impl Node {
             // enabled: true,
         };
     }
-    fn set_local_position(&mut self, x: Float, y: Float, z: Float) {
+    pub fn set_local_position(&mut self, x: Float, y: Float, z: Float) {
         self.location_iso.translation.vector.x = x;
         self.location_iso.translation.vector.y = y;
         self.location_iso.translation.vector.z = z;
     }
-    fn get_local_position(&self) -> &Vector3 {
+    pub fn get_local_position(&self) -> &Vector3 {
         &self.location_iso.translation.vector
     }
     // The primitive rotations are applied in order: 1 roll − 2 pitch − 3 yaw.
-    fn set_local_euler_angle(&mut self, x: Float, y: Float, z: Float) {
+    pub fn set_local_euler_angle(&mut self, x: Float, y: Float, z: Float) {
         self.location_iso.rotation = UnitQuaternion::from_euler_angles(x, y, z);
     }
-    fn get_local_euler_angle(&self) -> (Float, Float, Float) {
+    pub fn get_local_euler_angle(&self) -> (Float, Float, Float) {
         self.location_iso.rotation.euler_angles()
     }
-    fn set_local_scale(&mut self, x: Float, y: Float, z: Float) {
+    pub fn set_local_scale(&mut self, x: Float, y: Float, z: Float) {
         self.local_scale.x = x;
         self.local_scale.y = y;
         self.local_scale.z = z;
     }
-    fn get_local_scale(&self) -> &Vector3 {
+    pub fn get_local_scale(&self) -> &Vector3 {
         &self.local_scale
     }
-    fn get_position(&mut self) -> Vector3 {
+    pub fn get_position(&mut self) -> Vector3 {
         if !self._dirty_world {
             self.get_world_matrix();
         }
         let data = self.world_transform.data.as_slice();
         return Vector3::new(data[12], data[13], data[14]);
     }
-    fn set_position(&mut self, x: Float, y: Float, z: Float) {
+    pub fn set_position(&mut self, x: Float, y: Float, z: Float) {
         todo!();
     }
-    fn get_local_matrix(&self) -> Matrix4 {
-        self.location_iso
-            .to_homogeneous()
-            .prepend_nonuniform_scaling(&self.local_scale)
-    }
-    fn get_world_matrix(&mut self) -> Matrix4 {
+    pub fn get_world_matrix(&mut self) -> Matrix4 {
         if self._dirty_world {
             return self.world_transform;
         }
-        self.root().sync();
-        return self.world_transform;
-    }
-    fn sync(&mut self) {
         unsafe {
-            if self.parent.is_some() {
-                unsafe {
-                    let p = self
-                        .parent
-                        .unwrap()
-                        .as_mut()
-                        .as_any()
-                        .downcast_mut::<Node>()
-                        .unwrap();
-                    self.world_transform = p.get_local_matrix() * self.get_local_matrix();
-                    self._dirty_world = true;
-                }
-            } else {
-                self.world_transform = self.get_local_matrix();
-                self._dirty_world = true;
-            }
-            for child in self.children.iter_mut() {
-                child
-                    .as_mut()
-                    .as_any()
-                    .downcast_mut::<Node>()
-                    .unwrap()
-                    .sync();
-            }
-        }
-    }
-    fn parent(&mut self) -> Option<&mut Self> {
-        unsafe {
-            if self.parent.is_some() {
-                return Some(
-                    self.parent
-                        .unwrap()
-                        .as_mut()
-                        .as_any()
-                        .downcast_mut::<Node>()
-                        // .downcast_ref::<Node>()
-                        .unwrap(),
-                );
-            } else {
-                None
-            }
-        }
-    }
-    fn root(&mut self) -> &mut Self {
-        unsafe {
-            let mut curr = self.parent();
-            loop {
-                if curr.is_some() {
-                    curr = curr.unwrap().parent();
-                } else {
-                    return &mut *self;
-                }
-            }
+            self.root().as_mut().sync();
+            return self.world_transform;
         }
     }
 }
@@ -158,6 +102,44 @@ impl NodeTrait for Node {
     }
     fn as_any(&mut self) -> &mut dyn Any {
         self
+    }
+    fn sync(&mut self) {
+        unsafe {
+            if self.parent.is_some() {
+                unsafe {
+                    let p = self.parent.unwrap().as_mut();
+                    self.world_transform = p.get_local_matrix() * self.get_local_matrix();
+                    self._dirty_world = true;
+                }
+            } else {
+                self.world_transform = self.get_local_matrix();
+                self._dirty_world = true;
+            }
+            for child in self.children.iter_mut() {
+                child.as_mut().sync();
+            }
+        }
+    }
+    fn get_local_matrix(&self) -> Matrix4 {
+        self.location_iso
+            .to_homogeneous()
+            .prepend_nonuniform_scaling(&self.local_scale)
+    }
+
+    fn parent(&mut self) -> Option<NonNull<dyn NodeTrait>> {
+        return self.parent;
+    }
+    fn root(&mut self) -> NonNull<dyn NodeTrait> {
+        unsafe {
+            let mut curr = self.parent();
+            loop {
+                if curr.is_some() {
+                    curr = curr.unwrap().as_mut().parent();
+                } else {
+                    return NonNull::new(self).unwrap();
+                }
+            }
+        }
     }
 }
 
