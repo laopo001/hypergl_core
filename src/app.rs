@@ -1,3 +1,5 @@
+use std::ptr::NonNull;
+
 #[cfg(target_arch = "wasm32")]
 use wasm_bindgen::prelude::*;
 use winit::{
@@ -8,6 +10,7 @@ use winit::{
 
 use crate::{
     camera::{self, Camera},
+    ecs::entity::{self, Entity},
     graphics::{
         mesh,
         model::{DrawModel, Model},
@@ -24,6 +27,7 @@ pub struct App {
     pub config: wgpu::SurfaceConfiguration,
     pub camera: Option<Camera>,
     pub window: Window,
+    pub root: Entity,
 }
 
 impl App {
@@ -104,6 +108,7 @@ impl App {
         };
         surface.configure(&device, &config);
 
+        let entity = Entity::new("root");
         let mut app = App {
             width,
             height,
@@ -113,7 +118,9 @@ impl App {
             config,
             camera: None,
             window,
+            root: entity,
         };
+        app.root.app = NonNull::new(&mut app);
         return app;
     }
     pub async fn start(mut self, event_loop: EventLoop<()>, model: Model) {

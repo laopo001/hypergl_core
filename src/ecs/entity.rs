@@ -27,6 +27,23 @@ impl Entity {
 }
 impl NodeTrait for Entity {
     fn add_child(&mut self, mut child: Box<dyn NodeTrait>) {
+        // if child
+        //     .as_mut()
+        //     .as_any()
+        //     .downcast_mut::<Entity>()
+        //     .unwrap()
+        //     .attached
+        // {
+        //     return;
+        // }
+        // if self.attached {
+        //     child
+        //         .as_mut()
+        //         .as_any()
+        //         .downcast_mut::<Entity>()
+        //         .unwrap()
+        //         .attached = true;
+        // }
         let ptr = &mut child as *mut Box<dyn NodeTrait>;
         self.__node.add_child(child);
         unsafe { (*ptr).set_parent(NonNull::new(self)) }

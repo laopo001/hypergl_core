@@ -7,6 +7,7 @@ use std::ptr::NonNull;
 #[allow(unused_imports)]
 use std::rc::{Rc, Weak};
 
+use crate::app::App;
 use crate::{Float, Isometry3, Matrix4, UnitQuaternion, Vector3, PI};
 pub trait NodeTrait: Sync + Send {
     fn add_child(&mut self, child: Box<dyn NodeTrait>);
@@ -24,14 +25,13 @@ pub struct Node {
     pub name: String,
     pub location_iso: Isometry3,
     pub local_scale: Vector3,
-    // pub local_transform: Transform3,
     pub world_transform: Matrix4,
-    // pub parent: *mut Node,
-    // pub children: Vec<Node>,
     _dirty_world: bool,
     pub parent: Option<NonNull<dyn NodeTrait>>,
     pub children: Vec<Box<dyn NodeTrait>>,
-    // enabled: bool,
+    pub enabled: bool,
+    pub attached: bool,
+    pub app: Option<NonNull<App>>,
 }
 
 impl Node {
@@ -45,7 +45,9 @@ impl Node {
             children: vec![],
             _dirty_world: false,
             name: name.to_string(),
-            // enabled: true,
+            enabled: true,
+            attached: false,
+            app: None,
         };
     }
     pub fn set_local_position(&mut self, x: Float, y: Float, z: Float) {
