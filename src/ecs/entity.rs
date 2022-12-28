@@ -1,18 +1,28 @@
+use std::ops::{Deref, DerefMut};
 use std::{any::Any, ptr::NonNull};
 
+use super::components::camera::CameraComponent;
 use crate::{
     node::{Node, NodeTrait},
     Float, Isometry3, Matrix4, UnitQuaternion, Vector3, PI,
 };
 
+unsafe impl Sync for Entity {}
+unsafe impl Send for Entity {}
 pub struct Entity {
     pub __node: Node,
+    pub camera: Option<CameraComponent>,
 }
 impl Entity {
     pub fn new(name: &str) -> Self {
         return Entity {
             __node: Node::new(name),
+            camera: None,
         };
+    }
+    pub fn add_camera(&mut self, mut camera: CameraComponent) {
+        camera.entity = NonNull::new(self);
+        self.camera = Some(camera);
     }
 }
 impl NodeTrait for Entity {
@@ -58,8 +68,6 @@ fn relative_eq(a: Vec<Float>, b: Vec<Float>) -> bool {
     }
     return true;
 }
-
-use std::ops::{Deref, DerefMut};
 
 impl Deref for Entity {
     type Target = Node;

@@ -20,3 +20,5 @@ pub type Isometry3 = na::Isometry3<Float>;
 pub type UnitQuaternion = na::UnitQuaternion<Float>;
 
 pub const PI: f32 = std::f32::consts::PI;
+
+pub type Color = wgpu::Color;
