@@ -10,7 +10,10 @@ use winit::{
 
 use crate::{
     camera::{self, Camera},
-    ecs::entity::{self, Entity},
+    ecs::{
+        entity::{self, Entity},
+        system::System,
+    },
     graphics::{
         mesh,
         model::{DrawModel, Model},
@@ -28,6 +31,7 @@ pub struct App {
     pub camera: Option<Camera>,
     pub window: Window,
     pub root: Entity,
+    pub system: System,
 }
 
 impl App {
@@ -119,8 +123,13 @@ impl App {
             camera: None,
             window,
             root: entity,
+            system: System {
+                cameras: Vec::new(),
+                test: Vec::new(),
+            },
         };
-        app.root.app = NonNull::new(&mut app);
+        app.root.__node.app = NonNull::new(&mut app);
+        println!("{:p}", &app);
         return app;
     }
     pub async fn start(mut self, event_loop: EventLoop<()>, model: Model) {

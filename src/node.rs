@@ -1,6 +1,7 @@
 use std::any::Any;
 #[allow(unused_imports)]
 use std::cell::{RefCell, UnsafeCell};
+use std::fmt::Debug;
 #[allow(unused_imports)]
 use std::ops::Deref;
 use std::ptr::NonNull;
@@ -9,7 +10,7 @@ use std::rc::{Rc, Weak};
 
 use crate::app::App;
 use crate::{Float, Isometry3, Matrix4, UnitQuaternion, Vector3, PI};
-pub trait NodeTrait: Sync + Send {
+pub trait NodeTrait: Sync + Send + Debug {
     fn add_child(&mut self, child: Box<dyn NodeTrait>);
     fn set_parent(&mut self, parent: Option<NonNull<dyn NodeTrait>>);
     fn as_any(&mut self) -> &mut dyn Any;
@@ -21,6 +22,7 @@ pub trait NodeTrait: Sync + Send {
 unsafe impl Sync for Node {}
 unsafe impl Send for Node {}
 
+#[derive(Debug)]
 pub struct Node {
     pub name: String,
     pub location_iso: Isometry3,
@@ -134,11 +136,12 @@ impl NodeTrait for Node {
     fn root(&mut self) -> NonNull<dyn NodeTrait> {
         unsafe {
             let mut curr = self.parent();
+
             loop {
                 if curr.is_some() {
                     curr = curr.unwrap().as_mut().parent();
                 } else {
-                    return NonNull::new(self).unwrap();
+                    return NonNull::new_unchecked(self);
                 }
             }
         }
