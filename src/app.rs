@@ -128,9 +128,12 @@ impl App {
                 test: Vec::new(),
             },
         };
-        app.root.__node.app = NonNull::new(&mut app);
-        println!("{:p}", &app);
+
+        // println!("{:p}", &app);
         return app;
+    }
+    pub fn init(&mut self) {
+        self.root.__node.app = NonNull::new(self);
     }
     pub async fn start(mut self, event_loop: EventLoop<()>, model: Model) {
         event_loop.run(move |event, _, control_flow| {

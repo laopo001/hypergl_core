@@ -11,7 +11,8 @@ use winit::event_loop::EventLoop;
 async fn run() -> anyhow::Result<()> {
     let event_loop = EventLoop::new();
     let mut app = App::new(&event_loop, 450, 400).await;
-    println!("{:p}", &app);
+    app.init();
+    // println!("{:p}", &app);
     let diffuse_bytes = include_bytes!("./cube/cube-diffuse.jpg");
     let diffuse_texture = Texture::from_bytes(&app, diffuse_bytes, "label")?;
     let mat = Material::new(&app, "t".to_string(), diffuse_texture);
@@ -25,8 +26,8 @@ async fn run() -> anyhow::Result<()> {
     ));
 
     app.root.add_child(Box::new(e));
-    app.system.test.push(1);
-    dbg!(app.system.test.len());
+    // app.system.test.push(1);
+    dbg!(app.system.cameras.len());
     // let camera = Camera::new(
     //     [2.0, 2.0, 2.0].into(),
     //     [0.0, 0.0, 0.0].into(),

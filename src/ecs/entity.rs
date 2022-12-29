@@ -45,8 +45,10 @@ unsafe fn run(e: &mut Entity, app: Option<NonNull<App>>) {
     e.__node.attached = true;
     if app.is_some() && e.camera.is_some() {
         // dbg!(&app.unwrap());
-        // app.unwrap().as_mut().system.test.push(1);
-        // .add_camera(NonNull::new_unchecked(e.camera.as_mut().unwrap()))
+        app.unwrap()
+            .as_mut()
+            .system
+            .add_camera(NonNull::new_unchecked(e.camera.as_mut().unwrap()))
     }
     e.children.iter_mut().for_each(|c| {
         let ptr = c.as_mut().as_any().downcast_mut::<Entity>().unwrap();
