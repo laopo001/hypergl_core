@@ -24,10 +24,11 @@ async fn run() -> anyhow::Result<()> {
         0.1,
         100.0,
     ));
+    e.set_local_position(2.0, 2.0, 2.0);
 
     app.root.add_child(Box::new(e));
     // app.system.test.push(1);
-    dbg!(app.system.cameras.len());
+    // dbg!(app.system.cameras.len());
     // let camera = Camera::new(
     //     [2.0, 2.0, 2.0].into(),
     //     [0.0, 0.0, 0.0].into(),
@@ -38,7 +39,7 @@ async fn run() -> anyhow::Result<()> {
     //     100.0,
     // );
     // app.camera = Some(camera);
-    // app.start(event_loop, model).await;
+    app.start(event_loop, model).await;
     Ok(())
 }
 fn main() {

@@ -228,16 +228,26 @@ impl App {
                 }),
             });
 
-            let camera = self.camera.as_mut().unwrap();
-            camera.bind_group(&self.device);
+            let mut camera = self.system.active_camera();
+            unsafe {
+                if camera.is_some() {
+                    camera.unwrap().as_mut().bind_group(&self.device);
+                }
+            }
 
             for index in 0..model.meshes.len() {
                 let mesh = &model.meshes[index];
                 let material = &model.materials[mesh.material_index.unwrap()];
                 render_pass.set_pipeline(&material.render_pipeline); //
-                if let Some(camera) = &self.camera {
+                if let Some(camera) = camera {
                     // render_pass.set_bind_group(1, camera.bind_group.as_ref().unwrap(), &[]);
-                    render_pass.draw_mesh(mesh, material, &camera.bind_group.as_ref().unwrap());
+                    unsafe {
+                        render_pass.draw_mesh(
+                            mesh,
+                            material,
+                            camera.as_ref().bind_group.as_ref().unwrap(),
+                        );
+                    }
                 } else {
                     panic!("No camera");
                 }

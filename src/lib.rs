@@ -14,6 +14,7 @@ pub type Float = f32;
 pub type Vector3 = na::Vector3<Float>;
 pub type Quaternion = na::Quaternion<Float>;
 pub type Matrix4 = na::Matrix4<Float>;
+pub type Matrix3 = nalgebra::Matrix3<Float>;
 pub type Transform3 = na::Transform3<Float>;
 pub type Point3 = na::Point3<Float>;
 pub type Isometry3 = na::Isometry3<Float>;

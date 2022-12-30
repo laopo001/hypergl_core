@@ -12,4 +12,11 @@ impl System {
     pub fn add_camera(&mut self, c: NonNull<CameraComponent>) {
         self.cameras.push(c);
     }
+    pub fn active_camera(&self) -> Option<NonNull<CameraComponent>> {
+        return if self.cameras.len() == 0 {
+            None
+        } else {
+            Some(self.cameras[0])
+        };
+    }
 }

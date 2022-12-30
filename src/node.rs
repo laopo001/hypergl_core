@@ -9,7 +9,7 @@ use std::ptr::NonNull;
 use std::rc::{Rc, Weak};
 
 use crate::app::App;
-use crate::{Float, Isometry3, Matrix4, UnitQuaternion, Vector3, PI};
+use crate::{Float, Isometry3, Matrix3, Matrix4, Point3, UnitQuaternion, Vector3, PI};
 pub trait NodeTrait: Sync + Send + Debug {
     fn add_child(&mut self, child: Box<dyn NodeTrait>);
     fn set_parent(&mut self, parent: Option<NonNull<dyn NodeTrait>>);
@@ -74,6 +74,12 @@ impl Node {
     }
     pub fn get_local_scale(&self) -> &Vector3 {
         &self.local_scale
+    }
+    pub fn lookat(&mut self, target: Point3, up: Vector3) {
+        let p = self.get_position();
+        let mut m = Matrix4::look_at_rh(&Point3::new(p.x, p.y, p.z), &target, &up);
+        m = m.try_inverse().unwrap();
+        self.location_iso.rotation = UnitQuaternion::from_matrix(&Matrix3::from(m));
     }
     pub fn get_position(&mut self) -> Vector3 {
         if !self._dirty_world {
