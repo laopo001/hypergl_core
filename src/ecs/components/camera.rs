@@ -33,7 +33,26 @@ impl CameraComponent {
     }
     pub fn build_view_projection_matrix(&self) -> Matrix4 {
         unsafe {
-            return self.proj_martix * self.entity.unwrap().as_mut().get_world_matrix();
+            dbg!(
+                &self.proj_martix,
+                &self
+                    .entity
+                    .unwrap()
+                    .as_mut()
+                    .get_world_matrix()
+                    .clone()
+                    .try_inverse()
+                    .unwrap()
+            );
+            return self.proj_martix
+                * self
+                    .entity
+                    .unwrap()
+                    .as_mut()
+                    .get_world_matrix()
+                    .clone()
+                    .try_inverse()
+                    .unwrap();
         }
     }
     pub fn bind_group_layout(device: &wgpu::Device) -> wgpu::BindGroupLayout {

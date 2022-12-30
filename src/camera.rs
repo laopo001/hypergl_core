@@ -40,6 +40,8 @@ impl Camera {
         // 2.
         let proj = Matrix4::new_perspective(self.aspect, self.fovy, self.znear, self.zfar);
         // 3.
+
+        dbg!(&view, &proj);
         return proj * view;
     }
     pub fn bind_group_layout(device: &wgpu::Device) -> wgpu::BindGroupLayout {

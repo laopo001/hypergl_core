@@ -77,9 +77,12 @@ impl Node {
     }
     pub fn lookat(&mut self, target: Point3, up: Vector3) {
         let p = self.get_position();
+
         let mut m = Matrix4::look_at_rh(&Point3::new(p.x, p.y, p.z), &target, &up);
-        m = m.try_inverse().unwrap();
-        self.location_iso.rotation = UnitQuaternion::from_matrix(&Matrix3::from(m));
+        // m = m.try_inverse().unwrap();
+        self.location_iso.rotation = UnitQuaternion::from_matrix(&Matrix3::new(
+            m.m11, m.m12, m.m13, m.m21, m.m22, m.m23, m.m31, m.m32, m.m33,
+        ));
     }
     pub fn get_position(&mut self) -> Vector3 {
         if !self._dirty_world {
@@ -92,9 +95,9 @@ impl Node {
         todo!();
     }
     pub fn get_world_matrix(&mut self) -> Matrix4 {
-        if self._dirty_world {
-            return self.world_transform;
-        }
+        // if self._dirty_world {
+        //     return self.world_transform;
+        // }
         unsafe {
             self.root().as_mut().sync();
             return self.world_transform;
