@@ -23,18 +23,32 @@ async fn run() -> A {
 }
 
 fn main() {
-    dbg!(&Matrix4::look_at_rh(
-        &Point3::new(2., 2., 2.),
-        &Point3::new(0., 0., 0.),
-        &Vector3::new(0., 1., 0.)
-    )
-    .try_inverse()
-    .unwrap());
-    dbg!(glam::Mat4::look_at_lh(
-        glam::f32::Vec3::new(2., 2., 2.),
-        glam::f32::Vec3::new(0., 0., 0.),
-        glam::f32::Vec3::new(0., 1., 0.)
+    // dbg!(&Matrix4::look_at_rh(
+    //     &Point3::new(2., 2., 2.),
+    //     &Point3::new(0., 0., 0.),
+    //     &Vector3::new(0., 1., 0.)
+    // )
+    // .try_inverse()
+    // .unwrap());
+    let m = glam::Mat4::look_at_rh(
+        glam::Vec3::new(2., 2., 2.),
+        glam::Vec3::new(0., 0., 0.),
+        glam::Vec3::new(0., 1., 0.),
+    );
+    dbg!(&m);
+    let q = glam::Quat::from_mat4(&m.inverse());
+    dbg!(&q);
+    dbg!(glam::Mat4::from_scale_rotation_translation(
+        glam::Vec3::new(1.0, 1.0, 1.0),
+        q,
+        glam::Vec3::new(2.0, 2.0, 2.0),
+    ));
+    dbg!(glam::Mat4::from_scale_rotation_translation(
+        glam::Vec3::new(1.0, 1.0, 1.0),
+        q,
+        glam::Vec3::new(2.0, 2.0, 2.0),
     )
     .inverse());
+
     pollster::block_on(run());
 }
