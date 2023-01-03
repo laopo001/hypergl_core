@@ -13,7 +13,7 @@ unsafe impl Sync for Entity {}
 unsafe impl Send for Entity {}
 #[derive(Debug)]
 pub struct Entity {
-    pub __node: Node,
+    pub __node: Box<Node>,
     pub camera: Option<CameraComponent>,
 }
 impl Entity {
@@ -87,7 +87,21 @@ impl NodeTrait for Entity {
         self.__node.parent()
     }
     fn root(&mut self) -> NonNull<dyn NodeTrait> {
-        return self.__node.root();
+        unsafe {
+            let mut root: *mut dyn NodeTrait = self as *mut dyn NodeTrait;
+            let mut curr = self.parent();
+
+            loop {
+                if curr.is_some() {
+                    dbg!(&curr.as_mut().unwrap().as_mut().to_node().name);
+                    // root = curr.clone();
+                    root = curr.unwrap().as_mut() as *mut dyn NodeTrait;
+                    curr = (*root).parent();
+                } else {
+                    return NonNull::new_unchecked(root);
+                }
+            }
+        }
     }
 }
 
@@ -126,5 +140,56 @@ fn test_local_position() {
             .get_position();
         let b = Vec3::new(1., 1., 5.);
         assert!(relative_eq(a.to_array().to_vec(), b.to_array().to_vec()))
+    }
+}
+
+#[test]
+fn test_root() {
+    let mut node = Entity::new("root");
+    let mut child = Entity::new("child");
+    let mut childchild = Entity::new("childchild");
+
+    child.add_child(Box::new(childchild));
+    node.add_child(Box::new(child));
+
+    unsafe {
+        dbg!(
+            &node.children()[0].children()[0]
+                .as_mut()
+                .as_any()
+                .downcast_mut::<Entity>()
+                .unwrap()
+                .name
+        );
+        assert!(
+            node.children()[0].children()[0]
+                .as_mut()
+                .as_any()
+                .downcast_mut::<Entity>()
+                .unwrap()
+                .root()
+                .as_mut()
+                .as_any()
+                .downcast_mut::<Entity>()
+                .unwrap()
+                .to_node()
+                .name
+                == "root"
+        );
+        assert!(
+            node.children()[0].children()[0]
+                .as_mut()
+                .as_any()
+                .downcast_mut::<Entity>()
+                .unwrap()
+                .root()
+                .as_mut()
+                .as_any()
+                .downcast_mut::<Entity>()
+                .unwrap()
+                .to_node()
+                .name
+                == "root"
+        );
     }
 }

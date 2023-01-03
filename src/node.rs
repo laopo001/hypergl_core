@@ -39,8 +39,8 @@ pub struct Node {
 }
 
 impl Node {
-    pub fn new(name: &str) -> Self {
-        return Self {
+    pub fn new(name: &str) -> Box<Self> {
+        return Box::new(Self {
             location_position: Vec3::new(0.0, 0.0, 0.0),
             location_rotation: Quat::IDENTITY,
             local_scale: Vec3::new(1.0, 1.0, 1.0),
@@ -53,8 +53,9 @@ impl Node {
             enabled: true,
             attached: false,
             app: None,
-        };
+        });
     }
+
     pub fn set_local_position(&mut self, x: Float, y: Float, z: Float) {
         self.location_position.x = x;
         self.location_position.y = y;
@@ -192,15 +193,17 @@ impl NodeTrait for Node {
     }
     fn root(&mut self) -> NonNull<dyn NodeTrait> {
         unsafe {
-            let mut root: Option<NonNull<dyn NodeTrait>> = None;
+            let mut root: *mut dyn NodeTrait = self as *mut dyn NodeTrait;
             let mut curr = self.parent();
 
             loop {
                 if curr.is_some() {
-                    root = curr.clone();
-                    curr = curr.unwrap().as_mut().parent();
+                    dbg!(&curr.as_mut().unwrap().as_mut().to_node().name);
+                    // root = curr.clone();
+                    root = curr.unwrap().as_mut() as *mut dyn NodeTrait;
+                    curr = (*root).parent();
                 } else {
-                    return root.unwrap();
+                    return NonNull::new_unchecked(root);
                 }
             }
         }
@@ -235,7 +238,7 @@ fn test_local_position() {
 
     let mut child = Node::new("child");
     child.set_local_position(0., 2., 0.);
-    node.add_child(Box::new(child));
+    node.add_child((child));
     unsafe {
         let a = node.children[0]
             .as_mut()
@@ -253,19 +256,38 @@ fn test_local_position() {
 #[test]
 fn test_root() {
     let mut node = Node::new("root");
-
-    node.set_local_position(1., 1., 1.);
-    use crate::PI;
-    node.set_local_euler_angle(0.5 * PI, 0., 0.);
-    node.set_local_scale(1., 2., 1.);
-
     let mut child = Node::new("child");
-    child.set_local_position(0., 2., 0.);
-    node.add_child(Box::new(child));
+    let mut childchild = Node::new("childchild");
+
+    child.add_child((childchild));
+    node.add_child((child));
 
     unsafe {
+        dbg!(
+            &node.children()[0].children()[0]
+                .as_mut()
+                .as_any()
+                .downcast_mut::<Node>()
+                .unwrap()
+                .name
+        );
         assert!(
-            node.children()[0]
+            node.children()[0].children()[0]
+                .as_mut()
+                .as_any()
+                .downcast_mut::<Node>()
+                .unwrap()
+                .root()
+                .as_mut()
+                .as_any()
+                .downcast_mut::<Node>()
+                .unwrap()
+                .to_node()
+                .name
+                == "root"
+        );
+        assert!(
+            node.children()[0].children()[0]
                 .as_mut()
                 .as_any()
                 .downcast_mut::<Node>()
