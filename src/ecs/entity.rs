@@ -86,16 +86,8 @@ impl NodeTrait for Entity {
     fn parent(&mut self) -> Option<NonNull<dyn NodeTrait>> {
         self.__node.parent()
     }
-
     fn root(&mut self) -> NonNull<dyn NodeTrait> {
-        let mut r = self.__node.root();
-        unsafe {
-            if r.as_mut().as_any().downcast_mut::<Entity>().is_none() {
-                return NonNull::new_unchecked(self);
-            } else {
-                return r;
-            }
-        }
+        return self.__node.root();
     }
 }
 
