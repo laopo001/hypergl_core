@@ -30,35 +30,19 @@ async fn run() -> anyhow::Result<()> {
     app.root.add_child(Box::new(e));
 
     app.root.sync();
-    dbg!(&app.root.children[0]
-        .as_mut()
-        .as_any()
-        .downcast_mut::<Entity>()
-        .unwrap()
-        .get_world_matrix()
-        .clone());
-    dbg!(&app.root.children[0]
-        .as_mut()
-        .as_any()
-        .downcast_mut::<Entity>()
-        .unwrap()
-        .get_world_matrix()
-        .clone()
-        .try_inverse()
-        .unwrap());
 
     // app.system.test.push(1);
     // dbg!(app.system.cameras.len());
-    let camera = Camera::new(
-        [2.0, 2.0, 2.0].into(),
-        [0.0, 0.0, 0.0].into(),
-        [0.0, 1.0, 0.0].into(),
-        1.0,
-        0.25 * std::f32::consts::PI,
-        0.1,
-        100.0,
-    );
-    app.camera = Some(camera);
+    // let camera = Camera::new(
+    //     [2.0, 2.0, 2.0].into(),
+    //     [0.0, 0.0, 0.0].into(),
+    //     [0.0, 1.0, 0.0].into(),
+    //     1.0,
+    //     0.25 * std::f32::consts::PI,
+    //     0.1,
+    //     100.0,
+    // );
+    // app.camera = Some(camera);
     app.start(event_loop, model).await;
     Ok(())
 }
