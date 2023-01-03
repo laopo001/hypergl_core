@@ -1,11 +1,11 @@
 use wgpu::util::DeviceExt;
 
-use crate::{app::App, Matrix4, Point3, Vector3, PI};
+use crate::{app::App, Mat4, Vec3, PI};
 
 pub struct Camera {
-    eye: Point3,
-    target: Point3,
-    up: Vector3,
+    eye: Vec3,
+    target: Vec3,
+    up: Vec3,
     aspect: f32,
     fovy: f32,
     znear: f32,
@@ -15,9 +15,9 @@ pub struct Camera {
 
 impl Camera {
     pub fn new(
-        eye: Point3,
-        target: Point3,
-        up: Vector3,
+        eye: Vec3,
+        target: Vec3,
+        up: Vec3,
         aspect: f32,
         fovy: f32,
         znear: f32,
@@ -34,11 +34,11 @@ impl Camera {
             bind_group: None,
         }
     }
-    pub fn build_view_projection_matrix(&self) -> Matrix4 {
+    pub fn build_view_projection_matrix(&self) -> Mat4 {
         // 1.
-        let view = Matrix4::look_at_rh(&self.eye, &self.target, &self.up);
+        let view = Mat4::look_at_rh(self.eye, self.target, self.up);
         // 2.
-        let proj = Matrix4::new_perspective(self.aspect, self.fovy, self.znear, self.zfar);
+        let proj = Mat4::perspective_rh(self.aspect, self.fovy, self.znear, self.zfar);
         // 3.
         // dbg!(&view, &proj);
         return proj * view;
@@ -61,12 +61,12 @@ impl Camera {
         return camera_bind_group_layout;
     }
     pub fn bind_group(&mut self, device: &wgpu::Device) {
-        let mut camera_uniform = CameraUniform::new();
-        camera_uniform.update_view_proj(self);
-
+        // let mut camera_uniform = CameraUniform::new();
+        // camera_uniform.update_view_proj(self);
+        let matrix = self.build_view_projection_matrix();
         let camera_buffer = device.create_buffer_init(&wgpu::util::BufferInitDescriptor {
             label: Some("Camera Buffer"),
-            contents: bytemuck::cast_slice(&[camera_uniform]),
+            contents: bytemuck::cast_slice(&[matrix]),
             usage: wgpu::BufferUsages::UNIFORM | wgpu::BufferUsages::COPY_DST,
         });
 
@@ -90,23 +90,23 @@ impl Camera {
 //     0.0, 0.0, 0.5, 1.0,
 // );
 
-#[repr(C)]
-// derive 属性自动导入的这些 trait，令其可被存入缓冲区
-#[derive(Debug, Copy, Clone, bytemuck::Pod, bytemuck::Zeroable)]
-struct CameraUniform {
-    // cgmath 的数据类型不能直接用于 bytemuck
-    // 需要先将 Matrix4 矩阵转为一个 4x4 的浮点数数组
-    view_proj: [[f32; 4]; 4],
-}
+// #[repr(C)]
+// // derive 属性自动导入的这些 trait，令其可被存入缓冲区
+// #[derive(Debug, Copy, Clone, bytemuck::Pod, bytemuck::Zeroable)]
+// struct CameraUniform {
+//     // cgmath 的数据类型不能直接用于 bytemuck
+//     // 需要先将 Matrix4 矩阵转为一个 4x4 的浮点数数组
+//     view_proj: [[f32; 4]; 4],
+// }
 
-impl CameraUniform {
-    fn new() -> Self {
-        Self {
-            view_proj: Matrix4::identity().into(),
-        }
-    }
+// impl CameraUniform {
+//     fn new() -> Self {
+//         Self {
+//             view_proj: Matrix4::IDENTITY.into(),
+//         }
+//     }
 
-    fn update_view_proj(&mut self, camera: &Camera) {
-        self.view_proj = camera.build_view_projection_matrix().into();
-    }
-}
+//     fn update_view_proj(&mut self, camera: &Camera) {
+//         self.view_proj = camera.build_view_projection_matrix().into();
+//     }
+// }

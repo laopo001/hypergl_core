@@ -1,10 +1,10 @@
 use std::ptr::NonNull;
 
-use crate::{ecs::entity::Entity, Float, Matrix4};
+use crate::{ecs::entity::Entity, Float, Mat4};
 use wgpu::util::DeviceExt;
 #[derive(Debug)]
 pub struct CameraComponent {
-    pub proj_martix: Matrix4,
+    pub proj_martix: Mat4,
     pub bind_group: Option<wgpu::BindGroup>,
     pub entity: Option<NonNull<Entity>>,
 }
@@ -12,7 +12,7 @@ pub struct CameraComponent {
 impl CameraComponent {
     pub fn new_perspective(aspect: Float, fovy: Float, znear: Float, zfar: Float) -> Self {
         Self {
-            proj_martix: Matrix4::new_perspective(aspect, fovy, znear, zfar),
+            proj_martix: Mat4::perspective_rh(aspect, fovy, znear, zfar),
             bind_group: None,
             entity: None,
         }
@@ -26,12 +26,12 @@ impl CameraComponent {
         zfar: Float,
     ) -> Self {
         Self {
-            proj_martix: Matrix4::new_orthographic(left, right, bottom, top, znear, zfar),
+            proj_martix: Mat4::orthographic_lh(left, right, bottom, top, znear, zfar),
             bind_group: None,
             entity: None,
         }
     }
-    pub fn build_view_projection_matrix(&self) -> Matrix4 {
+    pub fn build_view_projection_matrix(&self) -> Mat4 {
         unsafe {
             // dbg!(
             //     &self.proj_martix,
@@ -51,8 +51,7 @@ impl CameraComponent {
                     .as_mut()
                     .get_world_matrix()
                     .clone()
-                    .try_inverse()
-                    .unwrap();
+                    .inverse();
         }
     }
     pub fn bind_group_layout(device: &wgpu::Device) -> wgpu::BindGroupLayout {
@@ -73,12 +72,10 @@ impl CameraComponent {
         return camera_bind_group_layout;
     }
     pub fn bind_group(&mut self, device: &wgpu::Device) {
-        let mut camera_uniform = CameraUniform::new();
-        camera_uniform.update_view_proj(self);
-
+        let matrix = self.build_view_projection_matrix();
         let camera_buffer = device.create_buffer_init(&wgpu::util::BufferInitDescriptor {
             label: Some("Camera Buffer"),
-            contents: bytemuck::cast_slice(&[camera_uniform]),
+            contents: bytemuck::cast_slice(&[matrix]),
             usage: wgpu::BufferUsages::UNIFORM | wgpu::BufferUsages::COPY_DST,
         });
 
@@ -91,26 +88,5 @@ impl CameraComponent {
             label: Some("camera_bind_group"),
         });
         self.bind_group = Some(camera_bind_group);
-    }
-}
-
-#[repr(C)]
-// derive 属性自动导入的这些 trait，令其可被存入缓冲区
-#[derive(Debug, Copy, Clone, bytemuck::Pod, bytemuck::Zeroable)]
-struct CameraUniform {
-    // cgmath 的数据类型不能直接用于 bytemuck
-    // 需要先将 Matrix4 矩阵转为一个 4x4 的浮点数数组
-    view_proj: [[f32; 4]; 4],
-}
-
-impl CameraUniform {
-    fn new() -> Self {
-        Self {
-            view_proj: Matrix4::identity().into(),
-        }
-    }
-
-    fn update_view_proj(&mut self, camera: &CameraComponent) {
-        self.view_proj = camera.build_view_projection_matrix().into();
     }
 }

@@ -7,7 +7,7 @@ use hyper_rust::graphics::mesh::Mesh;
 use hyper_rust::graphics::model::Model;
 use hyper_rust::graphics::texture::Texture;
 use hyper_rust::node::{Node, NodeTrait};
-use hyper_rust::{Point3, Vector3};
+use hyper_rust::Vec3;
 use winit::event_loop::EventLoop;
 async fn run() -> anyhow::Result<()> {
     let event_loop = EventLoop::new();
@@ -26,7 +26,7 @@ async fn run() -> anyhow::Result<()> {
         100.0,
     ));
     e.set_local_position(2.0, 2.0, 2.0);
-    e.lookat(Point3::new(0., 0., 0.), Vector3::new(0., 1., 0.));
+    e.look_at(Vec3::new(0., 0., 0.), Vec3::new(0., 1., 0.));
     app.root.add_child(Box::new(e));
 
     app.root.sync();

@@ -11,14 +11,10 @@ pub mod node;
 mod test;
 
 pub type Float = f32;
-pub type Vector3 = na::Vector3<Float>;
-pub type Quaternion = na::Quaternion<Float>;
-pub type Matrix4 = na::Matrix4<Float>;
-pub type Matrix3 = nalgebra::Matrix3<Float>;
-pub type Transform3 = na::Transform3<Float>;
-pub type Point3 = na::Point3<Float>;
-pub type Isometry3 = na::Isometry3<Float>;
-pub type UnitQuaternion = na::UnitQuaternion<Float>;
+pub type Vec3 = glam::Vec3;
+pub type Quat = glam::Quat;
+pub type Mat4 = glam::Mat4;
+pub type Mat3 = glam::Mat3;
 
 pub const PI: f32 = std::f32::consts::PI;
 

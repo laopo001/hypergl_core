@@ -3,9 +3,10 @@ use std::{any::Any, ptr::NonNull};
 
 use super::components::camera::CameraComponent;
 use crate::app::App;
+use crate::node::relative_eq;
 use crate::{
     node::{Node, NodeTrait},
-    Float, Isometry3, Matrix4, UnitQuaternion, Vector3, PI,
+    Float, Mat4, Vec3, PI,
 };
 
 unsafe impl Sync for Entity {}
@@ -76,11 +77,11 @@ impl NodeTrait for Entity {
     fn as_any(&mut self) -> &mut dyn Any {
         self
     }
-    fn sync(&mut self) {
-        self.__node.sync();
+    fn to_node(&mut self) -> &mut Node {
+        &mut self.__node
     }
-    fn get_local_matrix(&self) -> Matrix4 {
-        self.__node.get_local_matrix()
+    fn children(&mut self) -> &mut Vec<Box<dyn NodeTrait>> {
+        return self.__node.children();
     }
     fn parent(&mut self) -> Option<NonNull<dyn NodeTrait>> {
         self.__node.parent()
@@ -102,23 +103,6 @@ impl NodeTrait for Entity {
             }
         }
     }
-}
-
-fn relative_eq(a: Vec<Float>, b: Vec<Float>) -> bool {
-    let epsilon = 1.0e-8 as f32;
-    if a.len() != b.len() {
-        dbg!(&a.len(), &b.len());
-
-        return false;
-    }
-    for i in 0..a.len() {
-        if (a[i] - b[i]).abs() > epsilon {
-            dbg!(&a);
-            dbg!(&b);
-            return false;
-        }
-    }
-    return true;
 }
 
 impl Deref for Entity {
@@ -154,10 +138,7 @@ fn test_local_position() {
             .downcast_mut::<Entity>()
             .unwrap()
             .get_position();
-        let b = Vector3::new(1., 1., 5.);
-        assert!(relative_eq(
-            a.data.as_slice().to_vec(),
-            b.data.as_slice().to_vec()
-        ))
+        let b = Vec3::new(1., 1., 5.);
+        assert!(relative_eq(a.to_array().to_vec(), b.to_array().to_vec()))
     }
 }
