@@ -27,7 +27,7 @@ async fn run() -> anyhow::Result<()> {
     ));
     e.set_local_position(2.0, 2.0, 2.0);
     e.look_at(Vec3::new(0., 0., 0.), Vec3::new(0., 1., 0.));
-    app.root.add_child(Box::new(e));
+    app.root.add_child(e);
 
     app.root.sync();
 

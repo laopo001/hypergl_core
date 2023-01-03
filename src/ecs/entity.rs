@@ -17,11 +17,11 @@ pub struct Entity {
     pub camera: Option<CameraComponent>,
 }
 impl Entity {
-    pub fn new(name: &str) -> Self {
-        return Entity {
+    pub fn new(name: &str) -> Box<Self> {
+        return Box::new(Entity {
             __node: Node::new(name),
             camera: None,
-        };
+        });
     }
     pub fn add_camera(&mut self, mut camera: CameraComponent) {
         camera.entity = NonNull::new(self);
@@ -128,7 +128,7 @@ fn test_local_position() {
 
     let mut child = Entity::new("child");
     child.set_local_position(0., 2., 0.);
-    node.add_child(Box::new(child));
+    node.add_child((child));
     unsafe {
         // dbg!(&node.root().as_mut().as_any().downcast_mut::<Entity>());
 
@@ -149,8 +149,8 @@ fn test_root() {
     let mut child = Entity::new("child");
     let mut childchild = Entity::new("childchild");
 
-    child.add_child(Box::new(childchild));
-    node.add_child(Box::new(child));
+    child.add_child((childchild));
+    node.add_child((child));
 
     unsafe {
         dbg!(

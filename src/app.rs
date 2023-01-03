@@ -30,7 +30,7 @@ pub struct App {
     pub config: wgpu::SurfaceConfiguration,
     pub camera: Option<Camera>,
     pub window: Window,
-    pub root: Entity,
+    pub root: Box<Entity>,
     pub system: System,
 }
 
