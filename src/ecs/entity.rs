@@ -2,6 +2,7 @@ use std::ops::{Deref, DerefMut};
 use std::{any::Any, ptr::NonNull};
 
 use super::components::camera::CameraComponent;
+use super::components::model::ModelComponent;
 use crate::app::App;
 use crate::node::relative_eq;
 use crate::{
@@ -15,17 +16,23 @@ unsafe impl Send for Entity {}
 pub struct Entity {
     pub __node: Box<Node>,
     pub camera: Option<CameraComponent>,
+    pub model: Option<ModelComponent>,
 }
 impl Entity {
     pub fn new(name: &str) -> Box<Self> {
         return Box::new(Entity {
             __node: Node::new(name),
             camera: None,
+            model: None,
         });
     }
     pub fn add_camera(&mut self, mut camera: CameraComponent) {
         camera.entity = NonNull::new(self);
         self.camera = Some(camera);
+    }
+    pub fn add_model(&mut self, mut model: ModelComponent) {
+        model.entity = NonNull::new(self);
+        self.model = Some(model);
     }
     pub fn get_app(&mut self) -> Option<NonNull<App>> {
         unsafe {
@@ -44,13 +51,24 @@ impl Entity {
 
 unsafe fn run(e: &mut Entity, app: Option<NonNull<App>>) {
     e.__node.attached = true;
-    if app.is_some() && e.camera.is_some() {
-        // dbg!(&app.unwrap());
-        app.unwrap()
-            .as_mut()
-            .system
-            .add_camera(NonNull::new_unchecked(e.camera.as_mut().unwrap()))
+    if app.is_some() {
+        if e.camera.is_some() {
+            // dbg!(&app.unwrap());
+            app.unwrap()
+                .as_mut()
+                .system
+                .cameras
+                .push(NonNull::new_unchecked(e.camera.as_mut().unwrap()))
+        }
+        if e.model.is_some() {
+            app.unwrap()
+                .as_mut()
+                .system
+                .models
+                .push(NonNull::new_unchecked(e.model.as_mut().unwrap()))
+        }
     }
+
     e.children.iter_mut().for_each(|c| {
         let ptr = c.as_mut().as_any().downcast_mut::<Entity>().unwrap();
         run(ptr, app);

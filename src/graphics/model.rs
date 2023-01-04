@@ -6,6 +6,7 @@ use crate::graphics::material::Material;
 use crate::graphics::mesh::Mesh;
 use crate::graphics::vertex::Vertex;
 
+#[derive(Debug)]
 pub struct Model {
     pub meshes: Vec<Mesh>,
     pub materials: Vec<Material>,

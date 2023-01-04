@@ -14,7 +14,6 @@ use crate::{
         system::System,
     },
     graphics::{
-        mesh,
         model::{DrawModel, Model},
         texture::Texture,
     },
@@ -122,7 +121,7 @@ impl App {
             root: entity,
             system: System {
                 cameras: Vec::new(),
-                test: Vec::new(),
+                models: Vec::new(),
             },
         };
 
@@ -132,7 +131,7 @@ impl App {
     pub fn init(&mut self) {
         self.root.__node.app = NonNull::new(self);
     }
-    pub async fn start(mut self, event_loop: EventLoop<()>, model: Model) {
+    pub async fn start(mut self, event_loop: EventLoop<()>) {
         event_loop.run(move |event, _, control_flow| {
             match event {
                 Event::WindowEvent {
@@ -165,7 +164,7 @@ impl App {
                 }
                 Event::RedrawRequested(window_id) if window_id == self.window.id() => {
                     // self.update();
-                    match self.render(&model) {
+                    match self.render() {
                         Ok(_) => {}
                         // Reconfigure the surface if it's lost or outdated
                         Err(wgpu::SurfaceError::Lost | wgpu::SurfaceError::Outdated) => {
@@ -186,7 +185,7 @@ impl App {
             }
         });
     }
-    pub fn render(&mut self, model: &Model) -> std::result::Result<(), wgpu::SurfaceError> {
+    pub fn render(&mut self) -> std::result::Result<(), wgpu::SurfaceError> {
         let depth_texture = Texture::create_depth_texture(self, &self.config, "depth_texture");
         let output = self.surface.get_current_texture()?;
         let view = output
@@ -231,22 +230,25 @@ impl App {
                     camera.unwrap().as_mut().bind_group(&self.device);
                 }
             }
+            for model_nonnull in self.system.models.iter() {
+                unsafe {
+                    let model = &model_nonnull.as_ref().model;
 
-            for index in 0..model.meshes.len() {
-                let mesh = &model.meshes[index];
-                let material = &model.materials[mesh.material_index.unwrap()];
-                render_pass.set_pipeline(&material.render_pipeline); //
-                if let Some(camera) = camera {
-                    // render_pass.set_bind_group(1, camera.bind_group.as_ref().unwrap(), &[]);
-                    unsafe {
-                        render_pass.draw_mesh(
-                            mesh,
-                            material,
-                            camera.as_ref().bind_group.as_ref().unwrap(),
-                        );
+                    for index in 0..model.meshes.len() {
+                        let mesh = &model.meshes[index];
+                        let material = &model.materials[mesh.material_index.unwrap()];
+                        render_pass.set_pipeline(&material.render_pipeline); //
+                        if let Some(camera) = camera {
+                            // render_pass.set_bind_group(1, camera.bind_group.as_ref().unwrap(), &[]);
+                            render_pass.draw_mesh(
+                                mesh,
+                                material,
+                                camera.as_ref().bind_group.as_ref().unwrap(),
+                            );
+                        } else {
+                            panic!("No camera");
+                        }
                     }
-                } else {
-                    panic!("No camera");
                 }
             }
         }

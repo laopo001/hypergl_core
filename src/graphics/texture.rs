@@ -4,6 +4,7 @@ use std::num::NonZeroU32;
 
 use crate::app::App;
 
+#[derive(Debug)]
 pub struct Texture {
     pub texture: wgpu::Texture,
     pub view: wgpu::TextureView,

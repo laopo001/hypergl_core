@@ -2,6 +2,8 @@ use super::vertex::Vertex;
 use crate::app::App;
 use crate::ecs::components::camera::CameraComponent;
 use crate::graphics::texture::Texture;
+
+#[derive(Debug)]
 pub struct Material {
     pub name: String,
     pub diffuse_texture: Texture,
