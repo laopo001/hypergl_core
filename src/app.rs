@@ -9,7 +9,6 @@ use winit::{
 };
 
 use crate::{
-    camera::{self, Camera},
     ecs::{
         entity::{self, Entity},
         system::System,
@@ -28,7 +27,6 @@ pub struct App {
     pub width: u32,
     pub height: u32,
     pub config: wgpu::SurfaceConfiguration,
-    pub camera: Option<Camera>,
     pub window: Window,
     pub root: Box<Entity>,
     pub system: System,
@@ -120,7 +118,6 @@ impl App {
             device,
             queue,
             config,
-            camera: None,
             window,
             root: entity,
             system: System {

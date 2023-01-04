@@ -198,7 +198,7 @@ impl NodeTrait for Node {
 
             loop {
                 if curr.is_some() {
-                    dbg!(&curr.as_mut().unwrap().as_mut().to_node().name);
+                    // dbg!(&curr.as_mut().unwrap().as_mut().to_node().name);
                     // root = curr.clone();
                     root = curr.unwrap().as_mut() as *mut dyn NodeTrait;
                     curr = (*root).parent();
@@ -273,11 +273,11 @@ fn test_root() {
         );
         assert!(
             node.children()[0].children()[0]
-                .as_mut()
-                .as_any()
-                .downcast_mut::<Node>()
+                .parent()
                 .unwrap()
-                .root()
+                .as_mut()
+                .parent()
+                .unwrap()
                 .as_mut()
                 .as_any()
                 .downcast_mut::<Node>()

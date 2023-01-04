@@ -33,17 +33,6 @@ impl CameraComponent {
     }
     pub fn build_view_projection_matrix(&self) -> Mat4 {
         unsafe {
-            // dbg!(
-            //     &self.proj_martix,
-            //     &self
-            //         .entity
-            //         .unwrap()
-            //         .as_mut()
-            //         .get_world_matrix()
-            //         .clone()
-            //         .try_inverse()
-            //         .unwrap()
-            // );
             return self.proj_martix
                 * self
                     .entity

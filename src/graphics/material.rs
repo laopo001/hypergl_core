@@ -1,7 +1,7 @@
-use crate::{camera, graphics::texture::Texture};
-
 use super::vertex::Vertex;
 use crate::app::App;
+use crate::ecs::components::camera::CameraComponent;
+use crate::graphics::texture::Texture;
 pub struct Material {
     pub name: String,
     pub diffuse_texture: Texture,
@@ -26,7 +26,7 @@ impl Material {
             ],
             label: None,
         });
-        let camera_bind_group_layout = camera::Camera::bind_group_layout(&app.device);
+        let camera_bind_group_layout = CameraComponent::bind_group_layout(&app.device);
 
         let shader = device.create_shader_module(wgpu::ShaderModuleDescriptor {
             label: Some("Shader"),
