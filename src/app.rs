@@ -14,9 +14,12 @@ use crate::{
         system::System,
     },
     graphics::{
+        base_material::material::Material,
+        mesh::Mesh,
         model::{DrawModel, Model},
         texture::Texture,
     },
+    Mat4,
 };
 
 pub struct App {
@@ -224,27 +227,34 @@ impl App {
                 }),
             });
 
+            let mut camera_view_proj = Mat4::IDENTITY;
             let mut camera = self.system.active_camera();
             unsafe {
                 if camera.is_some() {
-                    camera.unwrap().as_mut().bind_group(&self.device);
+                    // camera.unwrap().as_mut().bind_group(&self.device);
+                    camera_view_proj = camera.unwrap().as_mut().build_view_projection_matrix();
                 }
             }
-            for model_nonnull in self.system.models.iter() {
+            for model_nonnull in self.system.models.iter_mut() {
                 unsafe {
-                    let model = &model_nonnull.as_ref().model;
+                    let model_component = model_nonnull.as_mut();
+                    let model = &mut model_component.model;
 
                     for index in 0..model.meshes.len() {
                         let mesh = &model.meshes[index];
                         let material = &model.materials[mesh.material_index.unwrap()];
-                        render_pass.set_pipeline(&material.render_pipeline); //
+
+                        let material_ptr = material as *const Material as *mut Material;
+
+                        (*material_ptr).shader.vertex_uniform_input.camera_view_proj =
+                            camera_view_proj;
+                        (*material_ptr).shader.vertex_uniform_input.model_matrix =
+                            model_component.entity.unwrap().as_mut().get_world_matrix();
+                        (*material_ptr).shader.bind_group(&self.device);
+
+                        render_pass.set_pipeline(&material.render_pipeline);
                         if let Some(camera) = camera {
-                            // render_pass.set_bind_group(1, camera.bind_group.as_ref().unwrap(), &[]);
-                            render_pass.draw_mesh(
-                                mesh,
-                                material,
-                                camera.as_ref().bind_group.as_ref().unwrap(),
-                            );
+                            render_pass.draw_mesh_new(mesh, material);
                         } else {
                             panic!("No camera");
                         }

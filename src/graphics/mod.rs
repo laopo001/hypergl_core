@@ -1,3 +1,4 @@
+pub mod base_material;
 pub mod material;
 pub mod mesh;
 pub mod model;

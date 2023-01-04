@@ -3,7 +3,7 @@ use hyper_rust::app::App;
 use hyper_rust::ecs::components::camera::CameraComponent;
 use hyper_rust::ecs::components::model::ModelComponent;
 use hyper_rust::ecs::entity::Entity;
-use hyper_rust::graphics::material::Material;
+use hyper_rust::graphics::base_material::material::Material;
 use hyper_rust::graphics::mesh::Mesh;
 use hyper_rust::graphics::model::Model;
 use hyper_rust::graphics::texture::Texture;
@@ -15,10 +15,11 @@ async fn run() -> anyhow::Result<()> {
     let mut app = App::new(&event_loop, 450, 400).await;
     app.init();
 
-    let diffuse_bytes = include_bytes!("./cube/cube-diffuse.jpg");
-    let diffuse_texture = Texture::from_bytes(&app, diffuse_bytes, "label")?;
-    let mat = Material::new(&app, "t".to_string(), diffuse_texture);
-    let model = Model::create_plane(&app, mat);
+    // let diffuse_bytes = include_bytes!("./cube/cube-diffuse.jpg");
+    // let diffuse_texture = Texture::from_bytes(&app, diffuse_bytes, "label")?;
+    // let mat = Material::new(&app, "t".to_string(), diffuse_texture);
+    let material = Material::new(&app);
+    let model = Model::create_plane(&app, material);
     let mut plane = Entity::new("plane");
     plane.add_model(ModelComponent::new(model));
 

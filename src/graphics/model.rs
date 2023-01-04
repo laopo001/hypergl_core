@@ -2,7 +2,8 @@ use std::any::type_name;
 use std::ops::Range;
 
 use crate::app::App;
-use crate::graphics::material::Material;
+
+use crate::graphics::base_material::material::Material;
 use crate::graphics::mesh::Mesh;
 use crate::graphics::vertex::Vertex;
 
@@ -69,6 +70,7 @@ pub trait DrawModel<'a> {
         instances: Range<u32>,
         camera_bind_group: &'a wgpu::BindGroup,
     );
+    fn draw_mesh_new(&mut self, mesh: &'a Mesh, material: &'a Material);
 }
 
 impl<'a, 'b> DrawModel<'b> for wgpu::RenderPass<'a>
@@ -91,13 +93,35 @@ where
         instances: Range<u32>,
         camera_bind_group: &'b wgpu::BindGroup,
     ) {
+        // self.set_vertex_buffer(0, mesh.vertex_buffer.slice(..));
+
+        // self.set_index_buffer(mesh.index_buffer.slice(..), wgpu::IndexFormat::Uint32);
+
+        // self.set_bind_group(0, &material.bind_group, &[]);
+        // self.set_bind_group(1, camera_bind_group, &[]);
+
+        // self.draw_indexed(0..mesh.num_elements, 0, instances);
+    }
+    fn draw_mesh_new(&mut self, mesh: &'b Mesh, material: &'b Material) {
         self.set_vertex_buffer(0, mesh.vertex_buffer.slice(..));
 
         self.set_index_buffer(mesh.index_buffer.slice(..), wgpu::IndexFormat::Uint32);
 
-        self.set_bind_group(0, &material.bind_group, &[]);
-        self.set_bind_group(1, camera_bind_group, &[]);
+        self.set_bind_group(
+            0,
+            material.shader.vertex_uniform_bind_group.as_ref().unwrap(),
+            &[],
+        );
+        self.set_bind_group(
+            1,
+            material
+                .shader
+                .fragment_uniform_bind_group
+                .as_ref()
+                .unwrap(),
+            &[],
+        );
 
-        self.draw_indexed(0..mesh.num_elements, 0, instances);
+        self.draw_indexed(0..mesh.num_elements, 0, 0..1);
     }
 }

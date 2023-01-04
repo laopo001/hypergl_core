@@ -2,6 +2,7 @@ use std::ptr::NonNull;
 
 use crate::{ecs::entity::Entity, Float, Mat4};
 use wgpu::util::DeviceExt;
+
 #[derive(Debug)]
 pub struct CameraComponent {
     pub proj_martix: Mat4,
