@@ -1,4 +1,4 @@
-use crate::{Mat4, Vec3};
+use crate::{Mat4, Vec3, Vec4};
 use wgpu::util::DeviceExt;
 #[repr(C)]
 #[derive(Debug, Copy, Clone, bytemuck::Pod, bytemuck::Zeroable)]
@@ -36,12 +36,12 @@ impl VertexUniformInput {
 #[repr(C)]
 #[derive(Debug, Copy, Clone, bytemuck::Pod, bytemuck::Zeroable)]
 pub struct FragmentUniformInput {
-    pub color: Vec3,
+    pub color: Vec4,
 }
 impl FragmentUniformInput {
     pub fn new() -> Self {
         return Self {
-            color: Vec3::new(0.6, 0.6, 0.6),
+            color: Vec4::new(0.6, 0.3, 0.6, 1.0),
         };
     }
     pub fn bind_group_layout(device: &wgpu::Device) -> wgpu::BindGroupLayout {
@@ -104,7 +104,7 @@ impl BaseShader {
         });
 
         let frag_bind_group = device.create_bind_group(&wgpu::BindGroupDescriptor {
-            layout: &VertexUniformInput::bind_group_layout(device),
+            layout: &FragmentUniformInput::bind_group_layout(device),
             entries: &[wgpu::BindGroupEntry {
                 binding: 0,
                 resource: frag_u_buffer.as_entire_binding(),

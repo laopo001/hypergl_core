@@ -22,6 +22,7 @@ async fn run() -> anyhow::Result<()> {
     let model = Model::create_plane(&app, material);
     let mut plane = Entity::new("plane");
     plane.add_model(ModelComponent::new(model));
+    plane.set_local_position(0., 0., -4.0);
 
     let mut camera = Entity::new("camera");
     camera.add_camera(CameraComponent::new_perspective(
@@ -30,8 +31,8 @@ async fn run() -> anyhow::Result<()> {
         0.1,
         100.0,
     ));
-    camera.set_local_position(2.0, 2.0, 2.0);
-    camera.look_at(Vec3::new(0., 0., 0.), Vec3::new(0., 1., 0.));
+    camera.set_local_position(0.0, 0.0, 2.0);
+    camera.look_at(Vec3::new(0., 0., 0.), Vec3::new(0., 0.1, 0.));
     app.root.add_child(camera);
     app.root.add_child(plane);
 

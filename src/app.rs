@@ -19,7 +19,7 @@ use crate::{
         model::{DrawModel, Model},
         texture::Texture,
     },
-    Mat4,
+    Mat4, Vec3,
 };
 
 pub struct App {
@@ -250,6 +250,7 @@ impl App {
                             camera_view_proj;
                         (*material_ptr).shader.vertex_uniform_input.model_matrix =
                             model_component.entity.unwrap().as_mut().get_world_matrix();
+
                         (*material_ptr).shader.bind_group(&self.device);
 
                         render_pass.set_pipeline(&material.render_pipeline);

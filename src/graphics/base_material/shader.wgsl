@@ -1,12 +1,12 @@
 // 顶点着色器
 
-struct UniformInput {
+struct VertexUniformInput {
     camera_view_proj: mat4x4<f32>,
     model_matrix: mat4x4<f32>,
 }
 
 @group(0) @binding(0)
-var<uniform> u: UniformInput;
+var<uniform> u: VertexUniformInput;
 
 
 struct VertexInput {
@@ -34,11 +34,16 @@ fn vs_main(
 
 // 片元着色器
 
+struct FragmentUniformInput {
+    color: vec4<f32>,
+}
+
+
 @group(1) @binding(0)
-var<uniform> color: vec3<f32>;
+var<uniform> f_u: FragmentUniformInput;
 
 
 @fragment
 fn fs_main(in: VertexOutput) -> @location(0) vec4<f32> {
-    return vec4<f32>(color, 1.0);
+    return f_u.color;
 }
