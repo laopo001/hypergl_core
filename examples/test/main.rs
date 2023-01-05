@@ -17,7 +17,8 @@ async fn run() -> anyhow::Result<()> {
     // let diffuse_bytes = include_bytes!("./cube/cube-diffuse.jpg");
     // let diffuse_texture = Texture::from_bytes(&app, diffuse_bytes, "label")?;
     // let mat = Material::new(&app, "t".to_string(), diffuse_texture);
-    let material = Material::new(&app);
+    let mut material = Material::new(&app);
+    material.set_color(Vec3::new(1., 0., 0.));
     let model = Model::create_plane(&app, material);
     let mut plane = Entity::new("plane");
     plane.add_model(ModelComponent::new(model));
@@ -31,7 +32,7 @@ async fn run() -> anyhow::Result<()> {
         100.0,
     ));
     camera.set_local_position(0.0, 0.0, 2.0);
-    camera.look_at(Vec3::new(0., 0., 0.), Vec3::new(0., 0.1, 0.));
+    camera.look_at(Vec3::new(0., 0., 0.), Vec3::new(0., 1.0, 0.));
     app.root.add_child(camera);
     app.root.add_child(plane);
 

@@ -1,8 +1,8 @@
 use crate::ecs::components::camera::CameraComponent;
 use crate::graphics::texture::Texture;
 use crate::graphics::vertex::Vertex;
-use crate::Vec4;
 use crate::{app::App, Vec3};
+use crate::{Float, Vec4};
 
 use super::shader::{BaseShader, FragmentUniformInput, VertexUniformInput};
 
@@ -78,5 +78,20 @@ impl Material {
             shader: BaseShader::new(),
             render_pipeline,
         }
+    }
+    pub fn set_color(&mut self, color: Vec3) {
+        self.shader.fragment_uniform_input.color.x = color.x;
+        self.shader.fragment_uniform_input.color.y = color.y;
+        self.shader.fragment_uniform_input.color.z = color.z;
+    }
+    pub fn get_color(&mut self) -> Vec3 {
+        use glam::Vec4Swizzles;
+        return self.shader.fragment_uniform_input.color.xyz();
+    }
+    pub fn set_opacity(&mut self, opacity: Float) {
+        self.shader.fragment_uniform_input.color.w = opacity;
+    }
+    pub fn get_opacity(&mut self) -> Float {
+        return self.shader.fragment_uniform_input.color.w;
     }
 }
