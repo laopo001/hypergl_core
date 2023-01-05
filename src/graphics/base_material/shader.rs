@@ -41,7 +41,7 @@ pub struct FragmentUniformInput {
 impl FragmentUniformInput {
     pub fn new() -> Self {
         return Self {
-            color: Vec4::new(0.6, 0.3, 0.6, 1.0),
+            color: Vec4::new(1.0, 1.0, 1.0, 1.0),
         };
     }
     pub fn bind_group_layout(device: &wgpu::Device) -> wgpu::BindGroupLayout {

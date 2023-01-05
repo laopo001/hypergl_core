@@ -32,6 +32,7 @@ pub struct App {
     pub window: Window,
     pub root: Box<Entity>,
     pub system: System,
+    pub event_loop: Option<EventLoop<()>>,
 }
 
 impl App {
@@ -66,8 +67,9 @@ impl App {
         }
         return window;
     }
-    pub async fn new(event_loop: &EventLoop<()>, width: u32, height: u32) -> Self {
-        let window = App::create_window(event_loop);
+    pub async fn new(width: u32, height: u32) -> Self {
+        let event_loop = EventLoop::new();
+        let window = App::create_window(&event_loop);
 
         let size = window.inner_size();
 
@@ -122,6 +124,7 @@ impl App {
             config,
             window,
             root: entity,
+            event_loop: Some(event_loop),
             system: System {
                 cameras: Vec::new(),
                 models: Vec::new(),
@@ -134,7 +137,8 @@ impl App {
     pub fn init(&mut self) {
         self.root.__node.app = NonNull::new(self);
     }
-    pub async fn start(mut self, event_loop: EventLoop<()>) {
+    pub async fn start(mut self) {
+        let event_loop: EventLoop<()> = self.event_loop.take().unwrap();
         event_loop.run(move |event, _, control_flow| {
             match event {
                 Event::WindowEvent {

@@ -11,8 +11,7 @@ use hyper_rust::node::{Node, NodeTrait};
 use hyper_rust::Vec3;
 use winit::event_loop::EventLoop;
 async fn run() -> anyhow::Result<()> {
-    let event_loop = EventLoop::new();
-    let mut app = App::new(&event_loop, 450, 400).await;
+    let mut app = App::new(450, 400).await;
     app.init();
 
     // let diffuse_bytes = include_bytes!("./cube/cube-diffuse.jpg");
@@ -36,7 +35,7 @@ async fn run() -> anyhow::Result<()> {
     app.root.add_child(camera);
     app.root.add_child(plane);
 
-    app.start(event_loop).await;
+    app.start().await;
     Ok(())
 }
 fn main() {

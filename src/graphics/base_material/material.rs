@@ -1,7 +1,8 @@
-use crate::app::App;
 use crate::ecs::components::camera::CameraComponent;
 use crate::graphics::texture::Texture;
 use crate::graphics::vertex::Vertex;
+use crate::Vec4;
+use crate::{app::App, Vec3};
 
 use super::shader::{BaseShader, FragmentUniformInput, VertexUniformInput};
 
