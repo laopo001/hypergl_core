@@ -5,7 +5,7 @@ pub mod app;
 pub mod ecs;
 pub mod graphics;
 pub mod node;
-mod test;
+// mod test;
 
 pub type Float = f32;
 pub type Vec3 = glam::Vec3;

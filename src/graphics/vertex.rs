@@ -1,28 +1,57 @@
-#[repr(C)]
-#[derive(Copy, Clone, Debug, bytemuck::Pod, bytemuck::Zeroable)]
-pub struct Vertex {
-    pub position: [f32; 3],
-    pub tex_coords: [f32; 2],
-}
+use crate::Float;
+use std::collections::BTreeMap;
 
-impl Vertex {
-    pub fn desc<'a>() -> wgpu::VertexBufferLayout<'a> {
-        use std::mem;
-        wgpu::VertexBufferLayout {
-            array_stride: mem::size_of::<Vertex>() as wgpu::BufferAddress,
-            step_mode: wgpu::VertexStepMode::Vertex,
-            attributes: &[
-                wgpu::VertexAttribute {
-                    offset: 0,
-                    shader_location: 0,
-                    format: wgpu::VertexFormat::Float32x3,
-                },
-                wgpu::VertexAttribute {
-                    offset: mem::size_of::<[f32; 3]>() as wgpu::BufferAddress,
-                    shader_location: 1,
-                    format: wgpu::VertexFormat::Float32x2,
-                },
-            ],
-        }
+#[derive(Debug)]
+pub struct MeshVertexAttribute {
+    pub name: &'static str,
+    pub id: u32,
+    pub format: wgpu::VertexFormat,
+    pub len: usize,
+}
+impl MeshVertexAttribute {
+    pub const fn new(name: &'static str, id: u32, format: wgpu::VertexFormat, len: usize) -> Self {
+        return Self {
+            name,
+            id,
+            format,
+            len,
+        };
     }
 }
+#[derive(Debug)]
+pub struct MeshAttributeData {
+    pub attribute: MeshVertexAttribute,
+    pub values: Vec<Float>,
+}
+
+// #[repr(C)]
+// #[derive(Debug)]
+// pub struct Vertex {
+//     pub data: BTreeMap<u32, MeshVertexAttribute>,
+// }
+
+// impl Vertex {
+//     pub fn new() -> Self {
+//         return Self {
+//             data: BTreeMap::new(),
+//         };
+//     }
+//     pub fn desc<'a>(&self) -> wgpu::VertexBufferLayout<'a> {
+//         let attrs: Vec<wgpu::VertexAttribute> = vec![];
+//         let curr = 0;
+//         for (index, attr) in self.data.iter() {
+//             attrs.push(wgpu::VertexAttribute {
+//                 offset: curr,
+//                 shader_location: attr.id,
+//                 format: attr.format,
+//             });
+//             curr += attr.format.size();
+//         }
+
+//         wgpu::VertexBufferLayout {
+//             array_stride: curr as wgpu::BufferAddress,
+//             step_mode: wgpu::VertexStepMode::Vertex,
+//             attributes: &attrs.as_slice(),
+//         }
+//     }
+// }

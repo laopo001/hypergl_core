@@ -246,6 +246,11 @@ impl App {
 
                     for index in 0..model.meshes.len() {
                         let mesh = &model.meshes[index];
+
+                        let mesh_ptr = mesh as *const Mesh as *mut Mesh;
+
+                        (*mesh_ptr).create_buffer(&self.device);
+
                         let material = &model.materials[mesh.material_index.unwrap()];
 
                         let material_ptr = material as *const Material as *mut Material;
@@ -256,8 +261,13 @@ impl App {
                             model_component.entity.unwrap().as_mut().get_world_matrix();
 
                         (*material_ptr).shader.bind_group(&self.device);
-
-                        render_pass.set_pipeline(&material.render_pipeline);
+                        // if((*material_ptr).render_pipeline.is_none()){}
+                        (*material_ptr).create_render_pipeline(
+                            &self.device,
+                            mesh,
+                            self.config.format,
+                        );
+                        render_pass.set_pipeline(material.render_pipeline.as_ref().unwrap());
                         if let Some(camera) = camera {
                             render_pass.draw_mesh_new(mesh, material);
                         } else {
