@@ -1,58 +1,41 @@
-use std::ptr::NonNull;
+#[macro_use]
+extern crate tera;
+#[macro_use]
+extern crate lazy_static;
 
-struct A {
-    name: String,
-}
+use std::error::Error;
+use tera::{Context, Result, Tera};
 
-async fn test() -> A {
-    let mut a = A {
-        name: "aaa".to_string(),
+lazy_static! {
+    pub static ref TEMPLATES: Tera = {
+        let mut tera = match Tera::new("examples/test2/templates/**.txt") {
+            Ok(t) => t,
+            Err(e) => {
+                println!("Parsing error(s): {}", e);
+                ::std::process::exit(1);
+            }
+        };
+        // tera.add_raw_template("hello.html", include_str!("./templates/index.txt"))
+        //     .unwrap();
+        tera.autoescape_on(vec![".txt"]);
+
+        tera
     };
-    println!("{:p}", &a);
-
-    return a;
-}
-
-async fn run() -> A {
-    let mut a = test().await;
-    println!("{:p}", &a);
-
-    return a;
 }
 
 fn main() {
-    dbg!(nalgebra::Matrix4::<f32>::new_perspective(
-        1.0,
-        0.25 * std::f32::consts::PI,
-        0.1,
-        100.0,
-    ));
+    let mut context = Context::new();
+    context.insert("username", &"Bob");
 
-    dbg!(glam::Mat4::perspective_rh(
-        1.0,
-        0.25 * std::f32::consts::PI,
-        0.1,
-        100.0
-    ));
-    // let m = glam::Mat4::look_at_rh(
-    //     glam::Vec3::new(2., 2., 2.),
-    //     glam::Vec3::new(0., 0., 0.),
-    //     glam::Vec3::new(0., 1., 0.),
-    // );
-    // dbg!(&m);
-    // let q = glam::Quat::from_mat4(&m.inverse());
-    // dbg!(&q);
-    // dbg!(glam::Mat4::from_scale_rotation_translation(
-    //     glam::Vec3::new(1.0, 1.0, 1.0),
-    //     q,
-    //     glam::Vec3::new(2.0, 2.0, 2.0),
-    // ));
-    // dbg!(glam::Mat4::from_scale_rotation_translation(
-    //     glam::Vec3::new(1.0, 1.0, 1.0),
-    //     q,
-    //     glam::Vec3::new(2.0, 2.0, 2.0),
-    // )
-    // .inverse());
-
-    // pollster::block_on(run());
+    match TEMPLATES.render("index.txt", &context) {
+        Ok(s) => println!("{:?}", s),
+        Err(e) => {
+            println!("Error: {}", e);
+            let mut cause = e.source();
+            while let Some(e) = cause {
+                println!("Reason: {}", e);
+                cause = e.source();
+            }
+        }
+    };
 }
