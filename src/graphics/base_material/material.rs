@@ -1,12 +1,23 @@
 use wgpu::Device;
 
+use super::shader::{BaseShader, FragmentUniformInput, VertexUniformInput};
 use crate::ecs::components::camera::CameraComponent;
 use crate::graphics::mesh::Mesh;
 use crate::graphics::texture::Texture;
 use crate::{app::App, Vec3};
 use crate::{Float, Vec4};
+use std::collections::HashMap;
 
-use super::shader::{BaseShader, FragmentUniformInput, VertexUniformInput};
+use handlebars::Handlebars;
+lazy_static! {
+    pub static ref TEMPLATES: Handlebars<'static> = {
+        let mut handlebars = Handlebars::new();
+        handlebars
+            .register_template_string("shade.wgsl.hbs", include_str!("./shade.wgsl.hbs"))
+            .unwrap();
+        handlebars
+    };
+}
 
 #[derive(Debug)]
 pub struct Material {
@@ -42,9 +53,15 @@ impl Material {
         mesh: &Mesh,
         texture_format: wgpu::TextureFormat,
     ) {
+        let mut data = HashMap::new();
+        for (_, v) in mesh.attribute_map.iter() {
+            data.insert(v.attribute.name, "enable");
+        }
+        let source = TEMPLATES.render("shade.wgsl.hbs", &data).unwrap();
+        dbg!(&source);
         let shader = device.create_shader_module(wgpu::ShaderModuleDescriptor {
             label: Some("Shader"),
-            source: wgpu::ShaderSource::Wgsl(include_str!("shader.wgsl").into()),
+            source: wgpu::ShaderSource::Wgsl(source.into()),
         });
         let render_pipeline_layout =
             device.create_pipeline_layout(&wgpu::PipelineLayoutDescriptor {

@@ -19,7 +19,7 @@ async fn run() -> anyhow::Result<()> {
     // let mat = Material::new(&app, "t".to_string(), diffuse_texture);
     let mut material = Material::new();
     material.set_color(Vec3::new(1., 0., 0.));
-    let model = Model::create_pentagon(material);
+    let model = Model::create_triangle(material);
     let mut plane = Entity::new("plane");
     plane.add_model(ModelComponent::new(model));
     plane.set_local_position(0., 0., 0.0);

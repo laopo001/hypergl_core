@@ -78,7 +78,7 @@ impl Model {
         let mut mesh = Mesh::new();
         mesh.insert_attribute(
             Mesh::ATTRIBUTE_POSITION,
-            vec![1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 1.0, 1.0, 0.0],
+            vec![1.0, 0.0, 0.0, 0.0, 1.0, 0.0, -1.0, 0.0, 0.0],
         );
 
         mesh.set_indices(vec![0, 1, 2]);
