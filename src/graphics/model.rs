@@ -93,6 +93,19 @@ impl Model {
 
         return model;
     }
+    pub fn create_box(material: Material, x_length: f32, y_length: f32, z_length: f32) -> Self {
+        let mut mesh = Mesh::create_box(x_length, y_length, z_length);
+        let mut model = Model {
+            meshes: vec![],
+            materials: vec![],
+        };
+
+        model.materials.push(material);
+        mesh.material_index = Some(0);
+        model.meshes.push(mesh);
+
+        return model;
+    }
 }
 
 pub trait DrawModel<'a> {

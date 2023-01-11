@@ -1,15 +1,30 @@
-use handlebars::Handlebars;
-use std::collections::HashMap;
+use std::marker::PhantomPinned;
+use std::ptr::NonNull;
+struct A {
+    name: String,
+}
+impl A {
+    fn new(name: &str) -> Self {
+        return A {
+            name: name.to_string(),
+        };
+    }
+}
+
+async fn test() -> A {
+    let mut a = A::new("name");
+    println!("{:p}", &a.name);
+
+    return a;
+}
+
+async fn run() -> A {
+    let mut a = test().await;
+    println!("{:p}", &a.name);
+
+    return a;
+}
 
 fn main() {
-    let mut handlebars = Handlebars::new();
-
-    handlebars
-        .register_template_string("hello", include_str!("./templates/index.txt"))
-        .unwrap();
-
-    let mut data = HashMap::new();
-    data.insert("name", "Rust");
-
-    println!("{}", handlebars.render("hello", &data).unwrap());
+    pollster::block_on(run());
 }

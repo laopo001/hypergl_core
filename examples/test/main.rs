@@ -19,7 +19,7 @@ async fn run() -> anyhow::Result<()> {
     // let mat = Material::new(&app, "t".to_string(), diffuse_texture);
     let mut material = Material::new();
     material.set_color(Vec3::new(1., 0., 0.));
-    let model = Model::create_triangle(material);
+    let model = Model::create_box(material, 0.5, 0.5, 0.5);
     let mut plane = Entity::new("plane");
     plane.add_model(ModelComponent::new(model));
     plane.set_local_position(0., 0., 0.0);
@@ -27,7 +27,7 @@ async fn run() -> anyhow::Result<()> {
     let mut camera = Entity::new("camera");
     camera.add_camera(CameraComponent::new_perspective(
         1.0,
-        0.25 * std::f32::consts::PI,
+        0.5 * std::f32::consts::PI,
         0.1,
         100.0,
     ));

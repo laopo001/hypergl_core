@@ -58,7 +58,7 @@ impl Material {
             data.insert(v.attribute.name, "enable");
         }
         let source = TEMPLATES.render("shade.wgsl.hbs", &data).unwrap();
-        dbg!(&source);
+        // dbg!(&source);
         let shader = device.create_shader_module(wgpu::ShaderModuleDescriptor {
             label: Some("Shader"),
             source: wgpu::ShaderSource::Wgsl(source.into()),

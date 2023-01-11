@@ -11,6 +11,9 @@ var<uniform> v_u: VertexUniformInput;
 
 struct VertexInput {
     @location(0) position: vec3<f32>,
+    {{#if Vertex_Normal}}
+    @location(1) normal: vec3<f32>,
+    {{/if}}
     {{#if Vertex_Uv}}
     @location(2) tex_coords: vec2<f32>,
     {{/if}}
