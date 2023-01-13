@@ -11,10 +11,22 @@ pub struct PointLight {
 pub enum LightType {
     Directional(DirectionalLight),
     Point(PointLight),
-    Spot,
 }
 
 #[derive(Debug)]
 pub struct LightComponent {
     pub light: LightType,
+}
+
+impl LightComponent {
+    pub fn new_directional(direction: Vec3) -> Self {
+        return Self {
+            light: LightType::Directional(DirectionalLight { direction }),
+        };
+    }
+    pub fn new_point(range: Float) -> Self {
+        return Self {
+            light: LightType::Point(PointLight { range }),
+        };
+    }
 }
